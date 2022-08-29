@@ -24,7 +24,11 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     registerData.password = await hashCreate(registerData.password);
 
-    newUser = await User.create(registerData);
+    newUser = await User.create({
+      name: registerData.name.toString(),
+      email: registerData.email.toString(),
+      password: registerData.password.toString(),
+    });
 
     res.status(200).json({ newUser });
   } catch (error) {
