@@ -1,11 +1,17 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import usersRouter from "./routers/usersRouter";
+import generalError from "../middlewares/generalError";
 
 const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
 app.disable("x-powered-by");
+
+app.use("/users", usersRouter);
+
+app.use(generalError);
 
 export default app;
