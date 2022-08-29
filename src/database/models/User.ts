@@ -12,6 +12,11 @@ export const userSchema = new Schema<IUser>({
     required: true,
   },
 
+  email: {
+    type: String,
+    required: true,
+  },
+
   contacts: [String],
 });
 
