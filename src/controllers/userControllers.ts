@@ -33,7 +33,7 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({ newUser });
   } catch (error) {
     const newError = new CreateError(
-      400,
+      404,
       error.message,
       "User did not provide email, name or password"
     );
