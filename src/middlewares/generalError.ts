@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import Debug from "debug";
 import { NextFunction, Request, Response } from "express";
-import CreateError from "../utils/CreateError";
+import CreateError from "../utils/CreateError/CreateError";
 
 const debug = Debug("widescope:middlewares:generalError");
 

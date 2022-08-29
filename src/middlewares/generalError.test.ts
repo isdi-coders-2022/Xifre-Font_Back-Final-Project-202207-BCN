@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import CreateError from "../utils/CreateError";
+import CreateError from "../utils/CreateError/CreateError";
 import generalError from "./generalError";
 
 describe("Given a generalError function (middleware)", () => {
