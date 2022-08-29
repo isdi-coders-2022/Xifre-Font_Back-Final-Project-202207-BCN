@@ -6,9 +6,11 @@ import generalError from "../middlewares/generalError";
 
 const app = express();
 
+app.disable("x-powered-by");
+
 app.use(cors());
 app.use(morgan("dev"));
-app.disable("x-powered-by");
+app.use(express.json());
 
 app.use("/users", usersRouter);
 

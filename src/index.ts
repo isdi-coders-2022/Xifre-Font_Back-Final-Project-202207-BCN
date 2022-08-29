@@ -16,6 +16,6 @@ const database = process.env.MONGO_DB;
     await startServer(port);
   } catch (error) {
     debug(chalk.red("Error while starting the server and the database"));
-    process.exit(1);
+    process.exit(5);
   }
 })();

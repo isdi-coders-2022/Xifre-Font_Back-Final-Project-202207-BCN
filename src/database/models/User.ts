@@ -12,20 +12,12 @@ export const userSchema = new Schema<IUser>({
     required: true,
   },
 
-  contacts: [String],
-});
-
-userSchema.set("toJSON", {
-  virtuals: true,
-  transform: (doc, ret) => {
-    const newDocument = { ...ret };
-    delete newDocument.password;
-    // eslint-disable-next-line no-underscore-dangle
-    delete newDocument.__v;
-    // eslint-disable-next-line no-underscore-dangle
-    delete newDocument._id;
-    return newDocument;
+  email: {
+    type: String,
+    required: true,
   },
+
+  contacts: [String],
 });
 
 export const User = model("User", userSchema, "users");
