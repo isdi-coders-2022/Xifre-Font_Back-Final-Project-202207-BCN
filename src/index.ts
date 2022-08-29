@@ -11,6 +11,7 @@ const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
+app.disable("x-powered-by");
 
 app.listen(4000, () => {
   debug(chalk.green("Server listening on port 4000"));
