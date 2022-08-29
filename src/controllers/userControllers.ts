@@ -9,6 +9,10 @@ import IUser from "../database/types/IUser";
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   const registerData: IRegisterData = req.body;
 
+  registerData.email = registerData.email.toString();
+  registerData.name = registerData.name.toString();
+  registerData.password = registerData.name.toString();
+
   if (!registerData.email || !registerData.name || !registerData.password) {
     const newError = new CreateError(
       400,
