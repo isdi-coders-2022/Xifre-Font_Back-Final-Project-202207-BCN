@@ -1,14 +1,10 @@
 import { model, Schema } from "mongoose";
+import IUser from "../types/IUser";
 
-export const userSchema = new Schema({
+export const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
-  },
-
-  image: {
-    type: String,
-    required: false,
   },
 
   password: {
