@@ -11,5 +11,11 @@ module.exports = {
     project: "tsconfig.json",
   },
   plugins: ["@typescript-eslint"],
-  rules: {},
+  rules: {
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      "always",
+      { exceptAfterSingleLine: true },
+    ],
+  },
 };
