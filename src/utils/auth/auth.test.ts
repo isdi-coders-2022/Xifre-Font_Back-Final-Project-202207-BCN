@@ -1,16 +1,25 @@
+import bcrypt from "bcryptjs";
 import Payload from "../../types/Payload";
 import { createToken, hashCreate } from "./auth";
 
+const mockSign = jest.fn().mockReturnValue("#");
+
+jest.mock("jsonwebtoken", () => ({
+  sign: (payload: Payload) => mockSign(payload),
+}));
+
 describe("Given a hashCreate function", () => {
-  describe("When instantiated with a string as an argument", () => {
-    test("Then it should return a promise with a string that is a hash of the argument provided", async () => {
+  describe("When instantiated with a password as an argument", () => {
+    test("Then it should call bcrypt with said password and a salt of 10", () => {
       const password = "admin";
-      const hashStart = "$2a$10$";
+      const salt = 10;
 
-      const result = await hashCreate(password);
+      bcrypt.hash = jest.fn().mockReturnValue("#");
 
-      expect(result.startsWith(hashStart)).toBe(true);
-      expect(result.length > 10).toBe(true);
+      const returnedValue = hashCreate(password);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith(password, salt);
+      expect(returnedValue).toBe("#");
     });
   });
 });
@@ -18,15 +27,15 @@ describe("Given a hashCreate function", () => {
 describe("Given a createToken function", () => {
   describe("When called with a payload as an argument", () => {
     test("Then it should return a signed token", () => {
-      const minExpectedSignLength = 20;
       const mockToken: Payload = {
         id: "1234",
         name: "aaa",
       };
 
-      const result = createToken(mockToken);
+      const returnedValue = createToken(mockToken);
 
-      expect(result.length > minExpectedSignLength).toBe(true);
+      expect(mockSign).toHaveBeenCalledWith(mockToken);
+      expect(returnedValue).toBe("#");
     });
   });
 });
