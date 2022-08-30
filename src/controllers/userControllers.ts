@@ -54,9 +54,10 @@ export const logIn = async (
   const loginData: ILoginData = req.body;
 
   let dbUser: IUser[];
+  let validationResult: any;
 
   try {
-    const validationResult = logInSchema.validate(loginData, {
+    validationResult = logInSchema.validate(loginData, {
       abortEarly: false,
     });
 
@@ -73,7 +74,9 @@ export const logIn = async (
   }
 
   try {
-    dbUser = await User.find({ name: loginData.name });
+    dbUser = await User.find({
+      name: (validationResult.value as ILoginData).name,
+    });
 
     if (!dbUser.length) {
       throw new Error();
