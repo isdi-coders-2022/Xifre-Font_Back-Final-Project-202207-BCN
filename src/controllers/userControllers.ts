@@ -50,12 +50,29 @@ export const logIn = async (
   res: Response,
   next: NextFunction
 ) => {
-  const loginRequest: ILoginData = req.body;
+  const loginData: ILoginData = req.body;
 
   let dbUser: IUser[];
 
   try {
-    dbUser = await User.find({ name: loginRequest.name });
+    const validationResult = signUpSchema.validate(loginData, {
+      abortEarly: false,
+    });
+
+    if (validationResult.error) {
+      throw new Error(Object.values(validationResult.error.message).join(""));
+    }
+  } catch (error) {
+    const newError = new CreateError(
+      404,
+      "User did not provide email, name or password",
+      error.message
+    );
+    next(newError);
+  }
+
+  try {
+    dbUser = await User.find({ name: loginData.name });
 
     if (!dbUser.length) {
       throw new Error();
@@ -72,7 +89,7 @@ export const logIn = async (
 
   try {
     const isPasswordCorrect = await hashCompare(
-      loginRequest.password,
+      loginData.password,
       dbUser[0].password
     );
 

@@ -3,13 +3,14 @@ import { User } from "../database/models/User";
 import signUpSchema from "../schemas/signUpSchema";
 import mockUser from "../test-utils/mocks/mockUser";
 import CreateError from "../utils/CreateError/CreateError";
+import prepareToken from "../utils/prepareToken/prepareToken";
 import { ILoginData } from "./types/userControllers";
 import { logIn, signUp } from "./userControllers";
 
 jest.mock("../utils/auth/auth", () => ({
   ...jest.requireActual("../utils/auth/auth"),
   hashCreate: () => jest.fn().mockReturnValue("#"),
-  createToken: () => jest.fn().mockReturnValue("#"),
+  createToken: () => "#",
   hashCompare: () => jest.fn().mockReturnValue(true),
 }));
 
@@ -22,6 +23,10 @@ const mockJoiValidationError = () =>
   );
 
 describe("Given a signUp function (controller)", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const { name, password, email } = mockUser;
   const status = 200;
 
@@ -68,6 +73,9 @@ describe("Given a signUp function (controller)", () => {
       await signUp(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      expect(nextCalled.privateMessage).toBe(errorMessage);
     });
 
     test("It should respond with an error if the request did not provide a valid user", async () => {
@@ -84,16 +92,25 @@ describe("Given a signUp function (controller)", () => {
       await signUp(invalidReq as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(
+        Object.values(mockJoiValidationError().error.message).join("")
+      );
     });
   });
 });
 
 describe("Given a log in function (controller)", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const status = 200;
 
   const mockLoginData: ILoginData = {
-    name: "name",
-    password: "password",
+    name: mockUser.name,
+    password: mockUser.password,
   };
 
   const req = {
@@ -119,7 +136,7 @@ describe("Given a log in function (controller)", () => {
     test("It should prepare a token with the logged in user", async () => {
       await logIn(req as Request, res as Response, next);
 
-      expect(res.json).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(prepareToken(mockUser));
     });
   });
 });
