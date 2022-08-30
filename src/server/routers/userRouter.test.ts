@@ -6,7 +6,6 @@ import mockUser from "../../test-utils/mocks/mockUser";
 jest.mock("../../utils/auth/auth", () => ({
   ...jest.requireActual("../../utils/auth/auth"),
   hashCreate: () => jest.fn().mockReturnValue("#"),
-  hashCompare: () => jest.fn().mockReturnValue("#"),
   createToken: () => jest.fn().mockReturnValue("#"),
 }));
 

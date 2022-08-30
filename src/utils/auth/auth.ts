@@ -9,3 +9,8 @@ export const hashCreate = (password: string): Promise<string> => {
 
 export const createToken = (payload: Payload): string =>
   jwt.sign(payload, process.env.AUTH_SECRET || "temporal_fix");
+
+export const hashCompare = (
+  dataToCompare: string,
+  hash: string
+): Promise<boolean> => bcrypt.compare(dataToCompare, hash);
