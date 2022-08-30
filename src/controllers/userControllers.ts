@@ -7,6 +7,7 @@ import { User } from "../database/models/User";
 import IUser from "../database/types/IUser";
 import prepareToken from "../utils/prepareToken/prepareToken";
 import signUpSchema from "../schemas/signUpSchema";
+import logInSchema from "../schemas/logInSchema";
 
 export const signUp = async (
   req: Request,
@@ -55,7 +56,7 @@ export const logIn = async (
   let dbUser: IUser[];
 
   try {
-    const validationResult = signUpSchema.validate(loginData, {
+    const validationResult = logInSchema.validate(loginData, {
       abortEarly: false,
     });
 
@@ -64,8 +65,8 @@ export const logIn = async (
     }
   } catch (error) {
     const newError = new CreateError(
-      404,
-      "User did not provide email, name or password",
+      400,
+      "Invalid username or password",
       error.message
     );
     next(newError);
@@ -98,10 +99,11 @@ export const logIn = async (
     }
   } catch (error) {
     const newError = new CreateError(
-      404,
-      "User or password not valid",
+      400,
+      "Invalid username or password",
       "Invalid password"
     );
+
     next(newError);
     return;
   }
