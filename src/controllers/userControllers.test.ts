@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../database/models/User";
+import signUpSchema from "../schemas/signUpSchema";
 import mockUser from "../test-utils/mocks/mockUser";
 import CreateError from "../utils/CreateError/CreateError";
 import { signUp } from "./userControllers";
@@ -10,11 +11,20 @@ jest.mock("../utils/auth/auth", () => ({
   createToken: () => jest.fn().mockReturnValue("#"),
 }));
 
+const mockJoiValidationError = () =>
+  signUpSchema.validate(
+    {},
+    {
+      abortEarly: false,
+    }
+  );
+
 describe("Given a signUp function (controller)", () => {
+  const { name, password, email } = mockUser;
   const status = 200;
 
   const req = {
-    body: mockUser,
+    body: { name, password, email },
   } as Partial<Request>;
 
   const res = {
@@ -49,8 +59,8 @@ describe("Given a signUp function (controller)", () => {
 
       const expectedError = new CreateError(
         400,
-        errorMessage,
-        "User did not provide email, name or password"
+        "User did not provide email, name or password",
+        errorMessage
       );
 
       await signUp(req as Request, res as Response, next);
@@ -60,13 +70,13 @@ describe("Given a signUp function (controller)", () => {
 
     test("It should respond with an error if the request did not provide a valid user", async () => {
       const invalidReq = {
-        body: "",
+        body: {},
       } as Partial<Request>;
 
       const expectedError = new CreateError(
-        400,
+        404,
         "User did not provide email, name or password",
-        "User did not provide email, name or password"
+        Object.values(mockJoiValidationError().error.message).join("")
       );
 
       await signUp(invalidReq as Request, res as Response, next);
