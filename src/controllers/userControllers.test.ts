@@ -3,12 +3,14 @@ import { User } from "../database/models/User";
 import signUpSchema from "../schemas/signUpSchema";
 import mockUser from "../test-utils/mocks/mockUser";
 import CreateError from "../utils/CreateError/CreateError";
-import { signUp } from "./userControllers";
+import { ILoginData } from "./types/userControllers";
+import { logIn, signUp } from "./userControllers";
 
 jest.mock("../utils/auth/auth", () => ({
   ...jest.requireActual("../utils/auth/auth"),
   hashCreate: () => jest.fn().mockReturnValue("#"),
   createToken: () => jest.fn().mockReturnValue("#"),
+  hashCompare: () => jest.fn().mockReturnValue(true),
 }));
 
 const mockJoiValidationError = () =>
@@ -82,6 +84,42 @@ describe("Given a signUp function (controller)", () => {
       await signUp(invalidReq as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+});
+
+describe("Given a log in function (controller)", () => {
+  const status = 200;
+
+  const mockLoginData: ILoginData = {
+    name: "name",
+    password: "password",
+  };
+
+  const req = {
+    body: mockLoginData,
+  } as Partial<Request>;
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const next = jest.fn() as NextFunction;
+
+  User.find = jest.fn().mockReturnValue([mockUser]);
+
+  describe("When called with a request, a response and a next function as arguments", () => {
+    test("It should call status with a code of 200", async () => {
+      await logIn(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status);
+    });
+
+    test("It should prepare a token with the logged in user", async () => {
+      await logIn(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalled();
     });
   });
 });
