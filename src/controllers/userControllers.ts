@@ -7,6 +7,7 @@ import { User } from "../database/models/User";
 import IUser from "../database/types/IUser";
 import prepareToken from "../utils/prepareToken/prepareToken";
 import signUpSchema from "../schemas/signUpSchema";
+import logInSchema from "../schemas/logInSchema";
 
 export const signUp = async (
   req: Request,
@@ -50,12 +51,32 @@ export const logIn = async (
   res: Response,
   next: NextFunction
 ) => {
-  const loginRequest: ILoginData = req.body;
+  const loginData: ILoginData = req.body;
 
   let dbUser: IUser[];
+  let validationResult: any;
 
   try {
-    dbUser = await User.find({ name: loginRequest.name });
+    validationResult = logInSchema.validate(loginData, {
+      abortEarly: false,
+    });
+
+    if (validationResult.error) {
+      throw new Error(Object.values(validationResult.error.message).join(""));
+    }
+  } catch (error) {
+    const newError = new CreateError(
+      400,
+      "Invalid username or password",
+      error.message
+    );
+    next(newError);
+  }
+
+  try {
+    dbUser = await User.find({
+      name: (validationResult.value as ILoginData).name,
+    });
 
     if (!dbUser.length) {
       throw new Error();
@@ -72,7 +93,7 @@ export const logIn = async (
 
   try {
     const isPasswordCorrect = await hashCompare(
-      loginRequest.password,
+      loginData.password,
       dbUser[0].password
     );
 
@@ -81,10 +102,11 @@ export const logIn = async (
     }
   } catch (error) {
     const newError = new CreateError(
-      404,
-      "User or password not valid",
+      400,
+      "Invalid username or password",
       "Invalid password"
     );
+
     next(newError);
     return;
   }
