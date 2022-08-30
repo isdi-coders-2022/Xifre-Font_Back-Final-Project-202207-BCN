@@ -26,7 +26,7 @@ describe("Given a /users/sign-up route", () => {
 
     test("Then it should respond with a status of 400 if the user data is invalid", async () => {
       User.create = jest.fn().mockReturnValue(mockUser);
-      const expectedStatus = 400;
+      const expectedStatus = 404;
 
       const res = await request(app).post("/users/sign-up").send("");
 

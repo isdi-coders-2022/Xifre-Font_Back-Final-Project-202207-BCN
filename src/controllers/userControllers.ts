@@ -6,6 +6,7 @@ import { hashCompare, hashCreate } from "../utils/auth/auth";
 import { User } from "../database/models/User";
 import IUser from "../database/types/IUser";
 import prepareToken from "../utils/prepareToken/prepareToken";
+import signUpSchema from "../schemas/signUpSchema";
 
 export const signUp = async (
   req: Request,
@@ -14,33 +15,31 @@ export const signUp = async (
 ) => {
   const registerData: IRegisterData = req.body;
 
-  if (!registerData.email || !registerData.name || !registerData.password) {
-    const newError = new CreateError(
-      400,
-      "User did not provide email, name or password",
-      "User did not provide email, name or password"
-    );
-    next(newError);
-    return;
-  }
-
-  let newUser: IUser;
-
   try {
-    registerData.password = await hashCreate(registerData.password);
+    const validationResult = signUpSchema.validate(registerData, {
+      abortEarly: false,
+    });
 
-    newUser = await User.create({
-      name: registerData.name.toString(),
-      email: registerData.email.toString(),
-      password: registerData.password.toString(),
+    if (validationResult.error) {
+      throw new Error(Object.values(validationResult.error.message).join(""));
+    }
+
+    (validationResult.value as IRegisterData).password = await hashCreate(
+      registerData.password
+    );
+
+    const newUser = await User.create({
+      name: (validationResult.value as IRegisterData).name,
+      email: (validationResult.value as IRegisterData).email,
+      password: (validationResult.value as IRegisterData).password,
     });
 
     res.status(200).json({ newUser });
   } catch (error) {
     const newError = new CreateError(
       404,
-      error.message,
-      "User did not provide email, name or password"
+      "User did not provide email, name or password",
+      error.message
     );
     next(newError);
   }

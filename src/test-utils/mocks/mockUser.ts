@@ -1,7 +1,7 @@
 const mockUser = {
   id: "userId",
-  name: "name",
-  password: "password",
+  name: "longusername",
+  password: "longpassword123",
   email: "user@email.com",
   contacts: ["contact_one", "contact_two"],
 };
