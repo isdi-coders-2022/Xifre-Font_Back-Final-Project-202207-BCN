@@ -5,7 +5,6 @@ import app from "..";
 import connectDB from "../../database";
 import { User } from "../../database/models/User";
 import mockUser from "../../test-utils/mocks/mockUser";
-import startServer from "../startServer";
 
 let mongoServer: MongoMemoryServer;
 
@@ -14,7 +13,6 @@ beforeAll(async () => {
   const mongoUrl = mongoServer.getUri();
 
   await connectDB(mongoUrl);
-  startServer(4001);
 });
 
 afterAll(async () => {
@@ -52,7 +50,7 @@ describe("Given a /users/sign-up route", () => {
     test("Then it should respond with a status of 404 if there was an error while creating the user", async () => {
       const expectedStatus = 404;
 
-      User.create(mockUser);
+      await User.create(mockUser);
 
       const res = await request(app).post("/users/sign-up").send({
         name: mockUser.name,
