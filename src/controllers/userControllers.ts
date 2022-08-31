@@ -131,7 +131,7 @@ export const getUserData = async (
     const newError = new CreateError(
       404,
       "Bad request",
-      `Requested user does not exist: ${error.message}`
+      `Requested user does not exist`
     );
 
     next(newError);
