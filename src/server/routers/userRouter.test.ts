@@ -11,10 +11,10 @@ let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  const mongoUrl = mongoServer.getUri();
+  const mongoUrl = await mongoServer.getUri();
 
   await connectDB(mongoUrl);
-  startServer(4001);
+  await startServer(4001);
 });
 
 afterAll(async () => {
@@ -32,11 +32,13 @@ describe("Given a /users/sign-up route", () => {
     test("Then it should respond with a status of 200", async () => {
       const expectedStatus = 200;
 
-      const res = await request(app).post("/users/sign-up").send({
-        name: mockUser.name,
-        password: mockUser.password,
-        email: mockUser.email,
-      });
+      const res = await request(await app)
+        .post("/users/sign-up")
+        .send({
+          name: mockUser.name,
+          password: mockUser.password,
+          email: mockUser.email,
+        });
 
       expect(res.statusCode).toBe(expectedStatus);
     });
@@ -52,7 +54,7 @@ describe("Given a /users/sign-up route", () => {
     test("Then it should respond with a status of 404 if there was an error while creating the user", async () => {
       const expectedStatus = 404;
 
-      User.create(mockUser);
+      await User.create(mockUser);
 
       const res = await request(app).post("/users/sign-up").send({
         name: mockUser.name,
