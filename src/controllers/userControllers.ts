@@ -113,3 +113,27 @@ export const logIn = async (
 
   res.status(200).json(prepareToken(dbUser[0]));
 };
+
+export const getUserData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+
+  let dbUser: IUser;
+
+  try {
+    dbUser = await User.findById(userId);
+
+    res.status(200).json({ user: dbUser });
+  } catch (error) {
+    const newError = new CreateError(
+      404,
+      "Bad request",
+      `Requested user does not exist: ${error.message}`
+    );
+
+    next(newError);
+  }
+};
