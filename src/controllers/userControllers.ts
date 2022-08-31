@@ -29,6 +29,14 @@ export const signUp = async (
       registerData.password
     );
 
+    const checkUser = await User.find({
+      name: (validationResult.value as IRegisterData).name,
+    });
+
+    if (checkUser.length > 0) {
+      throw new Error("User already exists");
+    }
+
     const newUser = await User.create({
       name: (validationResult.value as IRegisterData).name,
       email: (validationResult.value as IRegisterData).email,
