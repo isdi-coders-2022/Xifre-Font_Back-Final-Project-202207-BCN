@@ -25,7 +25,6 @@ const mockJoiValidationError = (schema: "signUp" | "logIn" = "signUp"): any => {
           abortEarly: false,
         }
       );
-      break;
 
     case "logIn":
       return logInSchema.validate(
@@ -34,10 +33,9 @@ const mockJoiValidationError = (schema: "signUp" | "logIn" = "signUp"): any => {
           abortEarly: false,
         }
       );
-      break;
+
     default:
       return {};
-      break;
   }
 };
 
@@ -64,12 +62,14 @@ describe("Given a signUp function (controller)", () => {
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test("It should call status with a code of 200", async () => {
+      User.find = jest.fn().mockReturnValue([]);
       await signUp(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status);
     });
 
     test("It should respond with a new user as a body", async () => {
+      User.find = jest.fn().mockReturnValue([]);
       const expectedBody = {
         newUser: mockUser,
       };
@@ -81,7 +81,9 @@ describe("Given a signUp function (controller)", () => {
 
     test("It should respond with an error if something goes wrong when hashing the password or creating", async () => {
       const errorMessage = "Error message";
+
       User.create = jest.fn().mockRejectedValue(new Error(errorMessage));
+      User.find = jest.fn().mockReturnValue([]);
 
       const expectedError = new CreateError(
         400,
@@ -94,10 +96,12 @@ describe("Given a signUp function (controller)", () => {
       expect(next).toHaveBeenCalledWith(expectedError);
 
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
-      expect(nextCalled.privateMessage).toBe(errorMessage);
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
     test("It should respond with an error if the request did not provide a valid user", async () => {
+      User.find = jest.fn().mockReturnValue([]);
+
       const invalidReq = {
         body: {},
       } as Partial<Request>;
@@ -113,9 +117,25 @@ describe("Given a signUp function (controller)", () => {
       expect(next).toHaveBeenCalledWith(expectedError);
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
 
-      expect(nextCalled.privateMessage).toBe(
-        Object.values(mockJoiValidationError("signUp").error.message).join("")
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+
+    test("It should respond with an error if the user already exists", async () => {
+      User.find = jest.fn().mockReturnValue([mockUser]);
+
+      const expectedError = new CreateError(
+        404,
+        "User did not provide email, name or password",
+        "User already exists"
       );
+
+      await signUp(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });
@@ -173,16 +193,14 @@ describe("Given a log in function (controller)", () => {
       const expectedError = new CreateError(
         400,
         "Invalid username or password",
-        Object.values(mockJoiValidationError().error.message).join("")
+        Object.values(mockJoiValidationError("logIn").error.message).join("")
       );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
 
-      expect(nextCalled.privateMessage).toBe(
-        Object.values(mockJoiValidationError("logIn").error.message).join("")
-      );
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
     test("If no users are found, it should call next with an error", async () => {
@@ -269,6 +287,9 @@ describe("Given a getUserData controller", () => {
       await getUserData(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });
