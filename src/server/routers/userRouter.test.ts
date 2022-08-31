@@ -26,7 +26,7 @@ afterEach(async () => {
 });
 
 describe("Given a /users/sign-up route", () => {
-  describe("When requested with POST method", () => {
+  describe("When requested with POST method and user register data", () => {
     test("Then it should respond with a status of 200", async () => {
       const expectedStatus = 200;
 
@@ -64,7 +64,7 @@ describe("Given a /users/sign-up route", () => {
 });
 
 describe("Given a /users/log-in route", () => {
-  describe("When requested with POST method", () => {
+  describe("When requested with POST method and user login data", () => {
     test("Then it should respond with a status of 200", async () => {
       const expectedStatus = 200;
 
@@ -118,6 +118,39 @@ describe("Given a /users/log-in route", () => {
       const res = await request(app)
         .post("/users/log-in")
         .send({ name: mockUser.name, password: mockUser.password });
+
+      expect(res.statusCode).toBe(expectedStatus);
+    });
+  });
+});
+
+describe("Given a /users/log-in route", () => {
+  describe("When requested with GET method and a user id as param", () => {
+    test("Then it should respond with a status of 200", async () => {
+      const expectedStatus = 200;
+
+      let user: any;
+
+      await request(app)
+        .post("/users/sign-up")
+        .send({
+          name: mockUser.name,
+          password: mockUser.password,
+          email: mockUser.email,
+        })
+        .then((data) => {
+          user = data;
+        });
+
+      const res = await request(app).get(`/users/${user.body.newUser.id}`);
+
+      expect(res.statusCode).toBe(expectedStatus);
+    });
+
+    test("Then it should respond with a status of 404 if the user doesn't exist", async () => {
+      const expectedStatus = 404;
+
+      const res = await request(app).get(`/users/${mockUser.id}`);
 
       expect(res.statusCode).toBe(expectedStatus);
     });
