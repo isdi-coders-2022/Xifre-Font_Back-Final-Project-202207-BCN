@@ -13,7 +13,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"name\": \"name\",\n    \"password\": \"password\",\n    \"email\": \"email\"\n}",
+          "raw": "{\n    \"name\": \"fakeName\",\n    \"password\": \"fakePassword\",\n    \"email\": \"fake@email.com\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -21,9 +21,9 @@
           }
         },
         "url": {
-          "raw": "{{localhost}}users/sign-up",
-          "host": ["{{localhost}}users"],
-          "path": ["sign-up"]
+          "raw": "{{productionUrl}}users/630e31ecb9f68115ba6a3e29f",
+          "host": ["{{productionUrl}}users"],
+          "path": ["630e31ecb9f68115ba6a3e29f"]
         }
       },
       "response": []
@@ -43,9 +43,28 @@
           }
         },
         "url": {
-          "raw": "{{localhost}}users/log-in",
-          "host": ["{{localhost}}users"],
+          "raw": "{{productionUrl}}users/log-in",
+          "host": ["{{productionUrl}}users"],
           "path": ["log-in"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get user by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{productionUrl}}users/:userId",
+          "host": ["{{productionUrl}}users"],
+          "path": [":userId"],
+          "variable": [
+            {
+              "key": "userId",
+              "value": null
+            }
+          ]
         }
       },
       "response": []
@@ -72,6 +91,10 @@
       "key": "localhost",
       "value": "http://localhost:4000/",
       "type": "string"
+    },
+    {
+      "key": "productionUrl",
+      "value": "https://xfont-final-project-202207.herokuapp.com/"
     }
   ]
 }
