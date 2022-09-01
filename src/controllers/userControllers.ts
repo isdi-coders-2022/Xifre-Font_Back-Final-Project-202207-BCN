@@ -6,8 +6,6 @@ import { hashCompare, hashCreate } from "../utils/auth/auth";
 import { User } from "../database/models/User";
 import IUser from "../database/types/IUser";
 import prepareToken from "../utils/prepareToken/prepareToken";
-import signUpSchema from "../schemas/signUpSchema";
-import logInSchema from "../schemas/logInSchema";
 
 export const signUp = async (
   req: Request,
@@ -17,20 +15,10 @@ export const signUp = async (
   const registerData: IRegisterData = req.body;
 
   try {
-    const validationResult = signUpSchema.validate(registerData, {
-      abortEarly: false,
-    });
-
-    if (validationResult.error) {
-      throw new Error(Object.values(validationResult.error.message).join(""));
-    }
-
-    (validationResult.value as IRegisterData).password = await hashCreate(
-      registerData.password
-    );
+    registerData.password = await hashCreate(registerData.password);
 
     const checkUser = await User.find({
-      name: (validationResult.value as IRegisterData).name,
+      name: registerData.name,
     });
 
     if (checkUser.length > 0) {
@@ -38,9 +26,9 @@ export const signUp = async (
     }
 
     const newUser = await User.create({
-      name: (validationResult.value as IRegisterData).name,
-      email: (validationResult.value as IRegisterData).email,
-      password: (validationResult.value as IRegisterData).password,
+      name: registerData.name,
+      email: registerData.email,
+      password: registerData.password,
     });
 
     res.status(200).json({ newUser });
@@ -62,28 +50,10 @@ export const logIn = async (
   const loginData: ILoginData = req.body;
 
   let dbUser: IUser[];
-  let validationResult: any;
-
-  try {
-    validationResult = logInSchema.validate(loginData, {
-      abortEarly: false,
-    });
-
-    if (validationResult.error) {
-      throw new Error(Object.values(validationResult.error.message).join(""));
-    }
-  } catch (error) {
-    const newError = new CreateError(
-      400,
-      "Invalid username or password",
-      error.message
-    );
-    next(newError);
-  }
 
   try {
     dbUser = await User.find({
-      name: (validationResult.value as ILoginData).name,
+      name: loginData.name,
     });
 
     if (!dbUser.length) {

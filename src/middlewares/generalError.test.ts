@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
+import { errors, ValidationError } from "express-validation";
 import CreateError from "../utils/CreateError/CreateError";
 import generalError from "./generalError";
 
 describe("Given a generalError function (middleware)", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const req = {} as Partial<Request>;
 
   const res = {
@@ -52,6 +57,30 @@ describe("Given a generalError function (middleware)", () => {
       generalError(customError, req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+  });
+
+  describe("When called with a validation error", () => {
+    class JoiError extends ValidationError {
+      statusCode = 400;
+      error = "";
+      details = { body: [] } as errors;
+    }
+
+    const falseError = new JoiError({ body: [] } as errors, {});
+
+    test("Then it should call status with a error code of '400'", () => {
+      generalError(falseError, req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+
+    test("Then it should respond with an error 'Bad request'", () => {
+      const errorMessage = { error: "Bad request" };
+
+      generalError(falseError, req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(errorMessage);
     });
   });
 });
