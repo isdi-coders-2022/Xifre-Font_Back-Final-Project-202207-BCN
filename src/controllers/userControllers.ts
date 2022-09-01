@@ -28,7 +28,9 @@ export const signUp = async (
         "User did not provide email, name or password",
         "User already exists"
       );
+
       next(newError);
+      return;
     }
 
     const newUser = await User.create({

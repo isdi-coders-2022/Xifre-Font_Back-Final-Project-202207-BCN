@@ -78,7 +78,7 @@ describe("Given a signUp function (controller)", () => {
       User.find = jest.fn().mockReturnValue([mockUser]);
 
       const expectedError = new CreateError(
-        codes.badRequest,
+        codes.conflict,
         "User did not provide email, name or password",
         "User already exists"
       );
@@ -119,7 +119,7 @@ describe("Given a log in function (controller)", () => {
   User.find = jest.fn().mockReturnValue([mockUser]);
 
   describe("When called with a request, a response and a next function as arguments", () => {
-    test("It should call status with a code of 200", async () => {
+    test(`It should call status with a code of ${codes.ok}`, async () => {
       mockHashCompareValue = jest.fn().mockReturnValue(true);
 
       await logIn(req as Request, res as Response, next);
