@@ -8,7 +8,7 @@ export const hashCreate = (password: string): Promise<string> => {
 };
 
 export const createToken = (payload: Payload): string =>
-  jwt.sign(payload, process.env.AUTH_SECRET || "temporal_fix");
+  jwt.sign(payload, process.env.AUTH_SECRET);
 
 export const hashCompare = (
   dataToCompare: string,
