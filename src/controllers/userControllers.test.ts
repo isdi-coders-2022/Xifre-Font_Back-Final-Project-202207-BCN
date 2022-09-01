@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../database/models/User";
-import logInSchema from "../schemas/logInSchema";
-import signUpSchema from "../schemas/signUpSchema";
 import mockUser from "../test-utils/mocks/mockUser";
 import CreateError from "../utils/CreateError/CreateError";
 import prepareToken from "../utils/prepareToken/prepareToken";
@@ -15,29 +13,6 @@ jest.mock("../utils/auth/auth", () => ({
   createToken: () => "#",
   hashCompare: () => mockHashCompareValue,
 }));
-
-const mockJoiValidationError = (schema: "signUp" | "logIn" = "signUp"): any => {
-  switch (schema) {
-    case "signUp":
-      return signUpSchema.validate(
-        {},
-        {
-          abortEarly: false,
-        }
-      );
-
-    case "logIn":
-      return logInSchema.validate(
-        {},
-        {
-          abortEarly: false,
-        }
-      );
-
-    default:
-      return {};
-  }
-};
 
 describe("Given a signUp function (controller)", () => {
   afterEach(() => {
@@ -99,27 +74,6 @@ describe("Given a signUp function (controller)", () => {
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
-    test("It should respond with an error if the request did not provide a valid user", async () => {
-      User.find = jest.fn().mockReturnValue([]);
-
-      const invalidReq = {
-        body: {},
-      } as Partial<Request>;
-
-      const expectedError = new CreateError(
-        404,
-        "User did not provide email, name or password",
-        Object.values(mockJoiValidationError("signUp").error.message).join("")
-      );
-
-      await signUp(invalidReq as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(expectedError);
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
-
-      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
-    });
-
     test("It should respond with an error if the user already exists", async () => {
       User.find = jest.fn().mockReturnValue([mockUser]);
 
@@ -147,7 +101,7 @@ describe("Given a log in function (controller)", () => {
 
   const status = 200;
 
-  let mockLoginData: any = {
+  const mockLoginData: any = {
     name: mockUser.name,
     password: mockUser.password,
   };
@@ -180,27 +134,6 @@ describe("Given a log in function (controller)", () => {
       await logIn(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(prepareToken(mockUser));
-    });
-
-    test("If the login data is not valid, it should call next with an error", async () => {
-      mockLoginData = {};
-
-      const emptyReq = {
-        body: mockLoginData,
-      } as Partial<Request>;
-
-      await logIn(emptyReq as Request, res as Response, next);
-      const expectedError = new CreateError(
-        400,
-        "Invalid username or password",
-        Object.values(mockJoiValidationError("logIn").error.message).join("")
-      );
-
-      expect(next).toHaveBeenCalledWith(expectedError);
-
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
-
-      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
     test("If no users are found, it should call next with an error", async () => {
