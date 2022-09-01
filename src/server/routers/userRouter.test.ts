@@ -39,8 +39,8 @@ describe("Given a /users/sign-up route", () => {
       expect(res.statusCode).toBe(expectedStatus);
     });
 
-    test("Then it should respond with a status of 404 if the user data is invalid", async () => {
-      const expectedStatus = 404;
+    test("Then it should respond with a status of 400 if the user data is invalid", async () => {
+      const expectedStatus = 400;
 
       const res = await request(app).post("/users/sign-up").send("");
 
@@ -91,7 +91,7 @@ describe("Given a /users/log-in route", () => {
         email: mockUser.email,
       });
 
-      const res = await request(app).post("/users/log-in").send({});
+      const res = await request(app).post("/users/log-in").send("");
 
       expect(res.statusCode).toBe(expectedStatus);
     });
