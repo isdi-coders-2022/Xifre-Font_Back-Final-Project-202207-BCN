@@ -1,5 +1,6 @@
 import express from "express";
 import { validate } from "express-validation";
+import { endpoints } from "../../configs/routes";
 import { getUserData, logIn, signUp } from "../../controllers/userControllers";
 import logInSchema from "../../schemas/logInSchema";
 import signUpSchema from "../../schemas/signUpSchema";
@@ -7,16 +8,16 @@ import signUpSchema from "../../schemas/signUpSchema";
 const usersRouter = express.Router();
 
 usersRouter.post(
-  "/sign-up",
+  endpoints.signUp,
   validate(signUpSchema, {}, { abortEarly: false }),
   signUp
 );
 usersRouter.post(
-  "/log-in",
+  endpoints.logIn,
   validate(logInSchema, {}, { abortEarly: false }),
   logIn
 );
 
-usersRouter.get("/:userId", getUserData);
+usersRouter.get(endpoints.getUserData, getUserData);
 
 export default usersRouter;

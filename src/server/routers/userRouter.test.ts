@@ -6,6 +6,7 @@ import connectDB from "../../database";
 import { User } from "../../database/models/User";
 import mockUser from "../../test-utils/mocks/mockUser";
 import codes from "../../configs/codes";
+import { endpoints } from "../../configs/routes";
 
 let mongoServer: MongoMemoryServer;
 
@@ -26,10 +27,10 @@ afterEach(async () => {
   await User.deleteMany();
 });
 
-describe("Given a /users/sign-up route", () => {
+describe(`Given a /users${endpoints.signUp} route`, () => {
   describe("When requested with POST method and user register data", () => {
     test(`Then it should respond with a status of ${codes.created}`, async () => {
-      const res = await request(app).post("/users/sign-up").send({
+      const res = await request(app).post(`/users${endpoints.signUp}`).send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
@@ -39,7 +40,7 @@ describe("Given a /users/sign-up route", () => {
     });
 
     test(`Then it should respond with a status of ${codes.badRequest} if the user data is invalid`, async () => {
-      const res = await request(app).post("/users/sign-up").send("");
+      const res = await request(app).post(`/users${endpoints.signUp}`).send("");
 
       expect(res.statusCode).toBe(codes.badRequest);
     });
@@ -47,7 +48,7 @@ describe("Given a /users/sign-up route", () => {
     test(`Then it should respond with a status of ${codes.conflict} if the user already exists`, async () => {
       await User.create(mockUser);
 
-      const res = await request(app).post("/users/sign-up").send({
+      const res = await request(app).post(`/users${endpoints.signUp}`).send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
@@ -58,16 +59,16 @@ describe("Given a /users/sign-up route", () => {
   });
 });
 
-describe("Given a /users/log-in route", () => {
+describe(`Given a /users${endpoints.logIn} route`, () => {
   describe("When requested with POST method and user login data", () => {
     test(`Then it should respond with a status of ${codes.ok}`, async () => {
-      await request(app).post("/users/sign-up").send({
+      await request(app).post(`/users${endpoints.signUp}`).send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
       });
 
-      const res = await request(app).post("/users/log-in").send({
+      const res = await request(app).post(`/users${endpoints.logIn}`).send({
         name: mockUser.name,
         password: mockUser.password,
       });
@@ -76,26 +77,26 @@ describe("Given a /users/log-in route", () => {
     });
 
     test(`Then it should respond with a status of ${codes.badRequest} if the request is not valid`, async () => {
-      await request(app).post("/users/sign-up").send({
+      await request(app).post(`/users${endpoints.signUp}`).send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
       });
 
-      const res = await request(app).post("/users/log-in").send("");
+      const res = await request(app).post(`/users${endpoints.logIn}`).send("");
 
       expect(res.statusCode).toBe(codes.badRequest);
     });
 
     test(`Then it should respond with a status of ${codes.badRequest} if the password is not correct`, async () => {
-      await request(app).post("/users/sign-up").send({
+      await request(app).post(`/users${endpoints.signUp}`).send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
       });
 
       const res = await request(app)
-        .post("/users/log-in")
+        .post(`/users${endpoints.logIn}`)
         .send({ name: mockUser.name, password: "" });
 
       expect(res.statusCode).toBe(codes.badRequest);
@@ -103,7 +104,7 @@ describe("Given a /users/log-in route", () => {
 
     test(`Then it should respond with a status of ${codes.notFound} if the user doesn't exist`, async () => {
       const res = await request(app)
-        .post("/users/log-in")
+        .post(`/users${endpoints.logIn}`)
         .send({ name: mockUser.name, password: mockUser.password });
 
       expect(res.statusCode).toBe(codes.notFound);
@@ -111,13 +112,13 @@ describe("Given a /users/log-in route", () => {
   });
 });
 
-describe("Given a /users/log-in route", () => {
+describe(`Given a /users/${endpoints.getUserData} route`, () => {
   describe("When requested with GET method and a user id as param", () => {
     test(`Then it should respond with a status of ${codes.ok}`, async () => {
       let user: any;
 
       await request(app)
-        .post("/users/sign-up")
+        .post(`/users/${endpoints.signUp}`)
         .send({
           name: mockUser.name,
           password: mockUser.password,

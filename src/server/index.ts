@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import usersRouter from "./routers/usersRouter";
 import generalError from "../middlewares/generalError";
+import { routers } from "../configs/routes";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/users", usersRouter);
+app.use(routers.users, usersRouter);
 
 app.use(generalError);
 
