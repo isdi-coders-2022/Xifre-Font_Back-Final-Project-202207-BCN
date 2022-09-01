@@ -7,14 +7,14 @@ import CreateError from "../utils/CreateError/CreateError";
 const debug = Debug("widescope:middlewares:generalError");
 
 const generalError = (
-  error: CreateError,
+  error: CreateError | ValidationError,
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  let errorCode = error.code ?? 500;
-  let errorMessage = error.message ?? "Something went wrong";
+  let errorCode: number;
+  let errorMessage: string;
 
   if (error instanceof ValidationError) {
     errorCode = 400;
@@ -25,9 +25,12 @@ const generalError = (
     error.details.body.forEach((errorInfo) => {
       debug(chalk.yellowBright(errorInfo.message));
     });
-  }
+  } else {
+    errorCode = (error as CreateError).code ?? 500;
+    errorMessage = error.message ?? "Something went wrong";
 
-  debug(chalk.red(error.privateMessage));
+    debug(chalk.red((error as CreateError).privateMessage));
+  }
 
   res.status(errorCode).json({ error: errorMessage });
 };
