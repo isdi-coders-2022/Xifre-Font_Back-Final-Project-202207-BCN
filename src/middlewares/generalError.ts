@@ -2,6 +2,7 @@ import chalk from "chalk";
 import Debug from "debug";
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
+import codes from "../configs/codes";
 import CreateError from "../utils/CreateError/CreateError";
 
 const debug = Debug("widescope:middlewares:generalError");
@@ -17,7 +18,7 @@ const generalError = (
   let errorMessage: string;
 
   if (error instanceof ValidationError) {
-    errorCode = 400;
+    errorCode = codes.badRequest;
     errorMessage = "Bad request";
 
     debug(chalk.red("Bad request:"));
@@ -26,7 +27,7 @@ const generalError = (
       debug(chalk.yellowBright(errorInfo.message));
     });
   } else {
-    errorCode = error.code ?? 500;
+    errorCode = error.code ?? codes.internalServerError;
     errorMessage = error.message ?? "Something went wrong";
 
     debug(chalk.red(error.privateMessage));

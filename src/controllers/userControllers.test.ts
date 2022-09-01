@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import codes from "../configs/codes";
 import { User } from "../database/models/User";
 import mockUser from "../test-utils/mocks/mockUser";
 import CreateError from "../utils/CreateError/CreateError";
@@ -20,7 +21,6 @@ describe("Given a signUp function (controller)", () => {
   });
 
   const { name, password, email } = mockUser;
-  const status = 200;
 
   const req = {
     body: { name, password, email },
@@ -36,11 +36,11 @@ describe("Given a signUp function (controller)", () => {
   User.create = jest.fn().mockReturnValue(mockUser);
 
   describe("When called with a request, a response and a next function as arguments", () => {
-    test("It should call status with a code of 200", async () => {
+    test(`It should call status with a code of '${codes.created}'`, async () => {
       User.find = jest.fn().mockReturnValue([]);
       await signUp(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status);
+      expect(res.status).toHaveBeenCalledWith(codes.created);
     });
 
     test("It should respond with a new user as a body", async () => {
@@ -61,7 +61,7 @@ describe("Given a signUp function (controller)", () => {
       User.find = jest.fn().mockReturnValue([]);
 
       const expectedError = new CreateError(
-        400,
+        codes.badRequest,
         "User did not provide email, name or password",
         errorMessage
       );
@@ -78,7 +78,7 @@ describe("Given a signUp function (controller)", () => {
       User.find = jest.fn().mockReturnValue([mockUser]);
 
       const expectedError = new CreateError(
-        404,
+        codes.badRequest,
         "User did not provide email, name or password",
         "User already exists"
       );
@@ -90,6 +90,7 @@ describe("Given a signUp function (controller)", () => {
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+      expect(nextCalled.code).toBe(codes.conflict);
     });
   });
 });
@@ -98,8 +99,6 @@ describe("Given a log in function (controller)", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
-  const status = 200;
 
   const mockLoginData: any = {
     name: mockUser.name,
@@ -125,7 +124,7 @@ describe("Given a log in function (controller)", () => {
 
       await logIn(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status);
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
 
     test("It should prepare a token with the logged in user", async () => {
@@ -142,7 +141,7 @@ describe("Given a log in function (controller)", () => {
       await logIn(req as Request, res as Response, next);
 
       const expectedError = new CreateError(
-        404,
+        codes.notFound,
         "Invalid username or password",
         "User not found"
       );
@@ -161,7 +160,7 @@ describe("Given a log in function (controller)", () => {
       await logIn(req as Request, res as Response, next);
 
       const expectedError = new CreateError(
-        400,
+        codes.badRequest,
         "Invalid username or password",
         "Invalid password"
       );
@@ -176,8 +175,6 @@ describe("Given a log in function (controller)", () => {
 });
 
 describe("Given a getUserData controller", () => {
-  const status = 200;
-
   const req = {
     params: { userId: "#" },
   } as Partial<Request>;
@@ -191,10 +188,10 @@ describe("Given a getUserData controller", () => {
   User.findById = jest.fn().mockReturnValue(mockUser);
 
   describe("When called with a request, a response and a next function as arguments", () => {
-    test("It should call status with a code of 200", async () => {
+    test(`It should call status with a code of ${codes.ok}`, async () => {
       await getUserData(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status);
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
 
     test("It should respond with a new user as a body", async () => {

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { errors, ValidationError } from "express-validation";
+import codes from "../configs/codes";
 import CreateError from "../utils/CreateError/CreateError";
 import generalError from "./generalError";
 
@@ -17,13 +18,12 @@ describe("Given a generalError function (middleware)", () => {
 
   const next = jest.fn() as NextFunction;
   describe("When called with a custom error (with undefined parameters), a request and a response as arguments", () => {
-    test("Then it should call res.status with a default status of '500'", () => {
-      const expectedStatus = 500;
+    test(`Then it should call res.status with a default status of '${codes.internalServerError}'`, () => {
       const customError = new CreateError(undefined, undefined, undefined);
 
       generalError(customError, req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.status).toHaveBeenCalledWith(codes.internalServerError);
     });
 
     test("Then it should call json with a generic error message of 'Something went wrong'", () => {
@@ -37,14 +37,17 @@ describe("Given a generalError function (middleware)", () => {
     });
   });
 
-  describe("When called with a custom error with a code of 400", () => {
-    test("Then it should call res.status with a default status of '400'", () => {
-      const status = 500;
-      const customError = new CreateError(status, undefined, undefined);
+  describe(`When called with a custom error with a code of ${codes.internalServerError}`, () => {
+    test(`Then it should call res.status with a default status of '${codes.internalServerError}'`, () => {
+      const customError = new CreateError(
+        codes.internalServerError,
+        undefined,
+        undefined
+      );
 
       generalError(customError, req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status);
+      expect(res.status).toHaveBeenCalledWith(codes.internalServerError);
     });
   });
 
@@ -62,17 +65,17 @@ describe("Given a generalError function (middleware)", () => {
 
   describe("When called with a validation error", () => {
     class JoiError extends ValidationError {
-      statusCode = 400;
+      statusCode = codes.badRequest;
       error = "";
       details = { body: [] } as errors;
     }
 
     const falseError = new JoiError({ body: [] } as errors, {});
 
-    test("Then it should call status with a error code of '400'", () => {
+    test(`Then it should call status with a error code of '${codes.badRequest}'`, () => {
       generalError(falseError, req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(codes.badRequest);
     });
 
     test("Then it should respond with an error 'Bad request'", () => {
