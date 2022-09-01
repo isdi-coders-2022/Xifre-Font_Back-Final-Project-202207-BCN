@@ -5,6 +5,7 @@ import app from "..";
 import connectDB from "../../database";
 import { User } from "../../database/models/User";
 import mockUser from "../../test-utils/mocks/mockUser";
+import codes from "../../configs/codes";
 
 let mongoServer: MongoMemoryServer;
 
@@ -27,29 +28,23 @@ afterEach(async () => {
 
 describe("Given a /users/sign-up route", () => {
   describe("When requested with POST method and user register data", () => {
-    test("Then it should respond with a status of 200", async () => {
-      const expectedStatus = 200;
-
+    test(`Then it should respond with a status of ${codes.created}`, async () => {
       const res = await request(app).post("/users/sign-up").send({
         name: mockUser.name,
         password: mockUser.password,
         email: mockUser.email,
       });
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.created);
     });
 
-    test("Then it should respond with a status of 400 if the user data is invalid", async () => {
-      const expectedStatus = 400;
-
+    test(`Then it should respond with a status of ${codes.badRequest} if the user data is invalid`, async () => {
       const res = await request(app).post("/users/sign-up").send("");
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.badRequest);
     });
 
-    test("Then it should respond with a status of 404 if the user already exists", async () => {
-      const expectedStatus = 404;
-
+    test(`Then it should respond with a status of ${codes.conflict} if the user already exists`, async () => {
       await User.create(mockUser);
 
       const res = await request(app).post("/users/sign-up").send({
@@ -58,16 +53,14 @@ describe("Given a /users/sign-up route", () => {
         email: mockUser.email,
       });
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.conflict);
     });
   });
 });
 
 describe("Given a /users/log-in route", () => {
   describe("When requested with POST method and user login data", () => {
-    test("Then it should respond with a status of 200", async () => {
-      const expectedStatus = 200;
-
+    test(`Then it should respond with a status of ${codes.ok}`, async () => {
       await request(app).post("/users/sign-up").send({
         name: mockUser.name,
         password: mockUser.password,
@@ -79,12 +72,10 @@ describe("Given a /users/log-in route", () => {
         password: mockUser.password,
       });
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.ok);
     });
 
-    test("Then it should respond with a status of 400 if the request is not valid", async () => {
-      const expectedStatus = 400;
-
+    test(`Then it should respond with a status of ${codes.badRequest} if the request is not valid`, async () => {
       await request(app).post("/users/sign-up").send({
         name: mockUser.name,
         password: mockUser.password,
@@ -93,12 +84,10 @@ describe("Given a /users/log-in route", () => {
 
       const res = await request(app).post("/users/log-in").send("");
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.badRequest);
     });
 
-    test("Then it should respond with a status of 400 if the password is not correct", async () => {
-      const expectedStatus = 400;
-
+    test(`Then it should respond with a status of ${codes.badRequest} if the password is not correct`, async () => {
       await request(app).post("/users/sign-up").send({
         name: mockUser.name,
         password: mockUser.password,
@@ -109,26 +98,22 @@ describe("Given a /users/log-in route", () => {
         .post("/users/log-in")
         .send({ name: mockUser.name, password: "" });
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.badRequest);
     });
 
-    test("Then it should respond with a status of 404 if the user doesn't exist", async () => {
-      const expectedStatus = 404;
-
+    test(`Then it should respond with a status of ${codes.notFound} if the user doesn't exist`, async () => {
       const res = await request(app)
         .post("/users/log-in")
         .send({ name: mockUser.name, password: mockUser.password });
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.notFound);
     });
   });
 });
 
 describe("Given a /users/log-in route", () => {
   describe("When requested with GET method and a user id as param", () => {
-    test("Then it should respond with a status of 200", async () => {
-      const expectedStatus = 200;
-
+    test(`Then it should respond with a status of ${codes.ok}`, async () => {
       let user: any;
 
       await request(app)
@@ -144,15 +129,13 @@ describe("Given a /users/log-in route", () => {
 
       const res = await request(app).get(`/users/${user.body.newUser.id}`);
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.ok);
     });
 
-    test("Then it should respond with a status of 404 if the user doesn't exist", async () => {
-      const expectedStatus = 404;
-
+    test(`Then it should respond with a status of ${codes.notFound} if the user doesn't exist`, async () => {
       const res = await request(app).get(`/users/${mockUser.id}`);
 
-      expect(res.statusCode).toBe(expectedStatus);
+      expect(res.statusCode).toBe(codes.notFound);
     });
   });
 });

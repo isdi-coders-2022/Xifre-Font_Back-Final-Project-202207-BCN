@@ -6,6 +6,7 @@ import { hashCompare, hashCreate } from "../utils/auth/auth";
 import { User } from "../database/models/User";
 import IUser from "../database/types/IUser";
 import prepareToken from "../utils/prepareToken/prepareToken";
+import codes from "../configs/codes";
 
 export const signUp = async (
   req: Request,
@@ -22,7 +23,14 @@ export const signUp = async (
     });
 
     if (checkUser.length > 0) {
-      throw new Error("User already exists");
+      const newError = new CreateError(
+        codes.conflict,
+        "User did not provide email, name or password",
+        "User already exists"
+      );
+
+      next(newError);
+      return;
     }
 
     const newUser = await User.create({
@@ -31,10 +39,10 @@ export const signUp = async (
       password: registerData.password,
     });
 
-    res.status(200).json({ newUser });
+    res.status(codes.created).json({ newUser });
   } catch (error) {
     const newError = new CreateError(
-      404,
+      codes.badRequest,
       "User did not provide email, name or password",
       error.message
     );
@@ -61,7 +69,7 @@ export const logIn = async (
     }
   } catch (error) {
     const newError = new CreateError(
-      404,
+      codes.notFound,
       "Invalid username or password",
       "User not found"
     );
@@ -80,7 +88,7 @@ export const logIn = async (
     }
   } catch (error) {
     const newError = new CreateError(
-      400,
+      codes.badRequest,
       "Invalid username or password",
       "Invalid password"
     );
@@ -89,7 +97,7 @@ export const logIn = async (
     return;
   }
 
-  res.status(200).json(prepareToken(dbUser[0]));
+  res.status(codes.ok).json(prepareToken(dbUser[0]));
 };
 
 export const getUserData = async (
@@ -104,10 +112,10 @@ export const getUserData = async (
   try {
     dbUser = await User.findById(userId);
 
-    res.status(200).json({ user: dbUser });
+    res.status(codes.ok).json({ user: dbUser });
   } catch (error) {
     const newError = new CreateError(
-      404,
+      codes.notFound,
       "Bad request",
       `Requested user does not exist`
     );
