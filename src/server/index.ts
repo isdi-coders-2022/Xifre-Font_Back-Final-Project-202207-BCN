@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import usersRouter from "./routers/usersRouter/usersRouter";
-import generalError from "../middlewares/generalError";
+import generalError from "../middlewares/generalError/generalError";
 import { routers } from "../configs/routes";
 import projectsRouter from "./routers/projectsRouter/projectsRouter";
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { errors, ValidationError } from "express-validation";
-import codes from "../configs/codes";
-import CreateError from "../utils/CreateError/CreateError";
+import codes from "../../configs/codes";
+import CreateError from "../../utils/CreateError/CreateError";
 import generalError from "./generalError";
 
 describe("Given a generalError function (middleware)", () => {
