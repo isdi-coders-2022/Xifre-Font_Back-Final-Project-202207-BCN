@@ -1,12 +1,12 @@
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import app from "..";
-import connectDB from "../../database";
-import { User } from "../../database/models/User";
-import mockUser from "../../test-utils/mocks/mockUser";
-import codes from "../../configs/codes";
-import { endpoints } from "../../configs/routes";
+import app from "../..";
+import connectDB from "../../../database";
+import { User } from "../../../database/models/User";
+import mockUser from "../../../test-utils/mocks/mockUser";
+import codes from "../../../configs/codes";
+import { endpoints } from "../../../configs/routes";
 
 let mongoServer: MongoMemoryServer;
 
