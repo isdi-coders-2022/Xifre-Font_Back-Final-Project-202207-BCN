@@ -1,12 +1,12 @@
-import "../loadEnvironment";
+import "../../loadEnvironment";
 import { NextFunction, Request, Response } from "express";
-import { IRegisterData, ILoginData } from "./types/userControllers";
-import CreateError from "../utils/CreateError/CreateError";
-import { hashCompare, hashCreate } from "../utils/auth/auth";
-import { User } from "../database/models/User";
-import IUser from "../database/types/IUser";
-import prepareToken from "../utils/prepareToken/prepareToken";
-import codes from "../configs/codes";
+import CreateError from "../../utils/CreateError/CreateError";
+import { hashCompare, hashCreate } from "../../utils/auth/auth";
+import { User } from "../../database/models/User";
+import IUser from "../../database/types/IUser";
+import prepareToken from "../../utils/prepareToken/prepareToken";
+import codes from "../../configs/codes";
+import { ILoginData, IRegisterData } from "../types/userControllers";
 
 export const signUp = async (
   req: Request,
