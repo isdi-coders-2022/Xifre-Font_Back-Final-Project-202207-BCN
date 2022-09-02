@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import codes from "../configs/codes";
-import { User } from "../database/models/User";
-import mockUser from "../test-utils/mocks/mockUser";
-import CreateError from "../utils/CreateError/CreateError";
-import prepareToken from "../utils/prepareToken/prepareToken";
+import codes from "../../configs/codes";
+import { User } from "../../database/models/User";
+import mockUser from "../../test-utils/mocks/mockUser";
+import CreateError from "../../utils/CreateError/CreateError";
+import prepareToken from "../../utils/prepareToken/prepareToken";
 import { getUserData, logIn, signUp } from "./userControllers";
 
 let mockHashCompareValue: any = true;

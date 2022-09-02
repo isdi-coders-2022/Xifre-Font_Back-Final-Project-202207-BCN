@@ -5,7 +5,7 @@ import {
   getUserData,
   logIn,
   signUp,
-} from "../../../controllers/userControllers";
+} from "../../../controllers/userControllers/userControllers";
 import logInSchema from "../../../schemas/logInSchema";
 import signUpSchema from "../../../schemas/signUpSchema";
 
