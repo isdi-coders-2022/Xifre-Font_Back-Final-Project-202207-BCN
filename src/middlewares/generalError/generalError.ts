@@ -2,8 +2,8 @@ import chalk from "chalk";
 import Debug from "debug";
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
-import codes from "../configs/codes";
-import CreateError from "../utils/CreateError/CreateError";
+import codes from "../../configs/codes";
+import CreateError from "../../utils/CreateError/CreateError";
 
 const debug = Debug("widescope:middlewares:generalError");
 

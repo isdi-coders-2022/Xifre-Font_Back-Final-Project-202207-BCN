@@ -11,6 +11,11 @@ export const projectSchema = new Schema<IProject>({
     type: String,
   },
 
+  technologies: {
+    type: [String],
+    required: false,
+  },
+
   repository: {
     type: String,
     required: true,
