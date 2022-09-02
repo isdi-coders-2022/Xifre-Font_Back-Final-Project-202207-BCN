@@ -1,31 +1,10 @@
+import "../../../testsSetup";
 import request from "supertest";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
 import app from "../..";
-import connectDB from "../../../database";
 import { User } from "../../../database/models/User";
 import mockUser from "../../../test-utils/mocks/mockUser";
 import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
-
-let mongoServer: MongoMemoryServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUrl = mongoServer.getUri();
-
-  await connectDB(mongoUrl);
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
-
-  await mongoServer.stop();
-});
-
-afterEach(async () => {
-  await User.deleteMany();
-});
 
 describe(`Given a /users${endpoints.signUp} route`, () => {
   describe("When requested with POST method and user register data", () => {
