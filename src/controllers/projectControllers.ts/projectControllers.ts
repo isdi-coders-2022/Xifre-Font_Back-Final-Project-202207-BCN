@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import CreateError from "../../utils/CreateError/CreateError";
 
@@ -10,9 +11,18 @@ const getAllProjects = async (
   try {
     const allProjects = await Project.find({});
 
-    res.status(200).json({ projects: allProjects });
+    if (!allProjects.length) {
+      res.status(codes.notFound).json({ projects: "No projects found" });
+      return;
+    }
+
+    res.status(codes.ok).json({ projects: allProjects });
   } catch (error) {
-    const newError = new CreateError(404, "No projects found", error.message);
+    const newError = new CreateError(
+      codes.notFound,
+      "No projects found",
+      `Error while getting projects: ${error.message}`
+    );
     next(newError);
   }
 };

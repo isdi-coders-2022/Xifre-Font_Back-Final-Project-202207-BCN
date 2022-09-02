@@ -1,4 +1,5 @@
 interface IProject {
+  id: string;
   name: string;
   repository: string;
   creationDate: Date;
