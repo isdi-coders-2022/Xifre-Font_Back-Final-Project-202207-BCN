@@ -5,9 +5,9 @@ const mockProject: IProject = {
   name: "Project name",
   description: "The description",
   technologies: ["react", "express"],
-  repository: "#",
+  repository: "Link to the repository",
   author: "John Doe",
-  logo: "#",
+  logo: "Link to the logo",
   creationDate: new Date("2022-09-02T08:35:07.126Z"),
 };
 
