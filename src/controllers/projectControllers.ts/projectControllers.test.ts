@@ -3,7 +3,7 @@ import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import mockProject from "../../test-utils/mocks/mockProject";
 import CreateError from "../../utils/CreateError/CreateError";
-import { getAllProjects, getById } from "./projectControllers";
+import { createProject, getAllProjects, getById } from "./projectControllers";
 
 describe("Given a getAllProjects function", () => {
   const req = {} as Partial<Request>;
@@ -119,6 +119,53 @@ describe("Given a getById function", () => {
       );
 
       await getById(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+});
+
+describe("Given a createProject function", () => {
+  const req = {} as Partial<Request>;
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+  const next = jest.fn() as NextFunction;
+  Project.create = jest.fn().mockReturnValue(mockProject);
+
+  describe("When called with a request, a response and a next function", () => {
+    test(`Then it should respond with a status of '${codes.created}'`, async () => {
+      await createProject(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(codes.created);
+    });
+
+    test(`Then it should respond with the project created`, async () => {
+      const expectedResponse = {
+        projectCreated: mockProject,
+      };
+
+      await createProject(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+  });
+
+  describe("When called but the project creation fails", () => {
+    test("Then it should call next with an error", async () => {
+      Project.create = jest.fn().mockRejectedValue(new Error());
+
+      const expectedError = new CreateError(
+        codes.badRequest,
+        "Unable to create the project",
+        "Unable to create the project"
+      );
+      await createProject(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
