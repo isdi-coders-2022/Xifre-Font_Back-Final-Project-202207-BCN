@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
-import IProject from "../../database/types/IProject";
 import CreateError from "../../utils/CreateError/CreateError";
+import ProtoProject from "../types/projectControllers";
 
 export const getAllProjects = async (
   req: Request,
@@ -60,7 +60,7 @@ export const createProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  const newProject: Omit<IProject, "id"> = req.body;
+  const newProject: ProtoProject = req.body;
 
   try {
     const finalProject = await Project.create(newProject);

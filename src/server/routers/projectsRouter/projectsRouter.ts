@@ -10,6 +10,6 @@ const projectsRouter = express.Router();
 
 projectsRouter.get(endpoints.getAllProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);
-projectsRouter.get(endpoints.createProject, createProject);
+projectsRouter.post(endpoints.createProject, createProject);
 
 export default projectsRouter;
