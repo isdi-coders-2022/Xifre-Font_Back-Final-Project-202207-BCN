@@ -9,4 +9,5 @@ export const endpoints = {
   getUserData: "/:userId",
 
   getAllProjects: "/all",
+  projectById: "/:projectId",
 };
