@@ -61,6 +61,7 @@ export const createProject = async (
   next: NextFunction
 ) => {
   const newProject: ProtoProject = req.body;
+  newProject.logo = `uploads\\${req.file.filename}`;
 
   try {
     const finalProject = await Project.create(newProject);
