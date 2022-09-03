@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../..";
 import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
+import ProtoProject from "../../../controllers/types/projectControllers";
 import { Project } from "../../../database/models/Project";
 import mockProject from "../../../test-utils/mocks/mockProject";
 import "../../../testsSetup";
@@ -52,10 +53,56 @@ describe(`Given a /projects${endpoints.projectById} route`, () => {
       expect(res.statusCode).toBe(codes.ok);
     });
 
-    test(`Then it should respond with a status of '${codes.notFound}' it there are no projects`, async () => {
+    test(`Then it should respond with a status of '${codes.notFound}' if there are no projects`, async () => {
       const res = await request(app).get("/projects/falseid");
 
       expect(res.statusCode).toBe(codes.notFound);
+    });
+  });
+});
+
+describe(`Given a /projects${endpoints.createProject} route`, () => {
+  describe("When requested with POST method", () => {
+    test(`Then it should respond with a status of '${codes.created}'`, async () => {
+      const res = await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .send({
+          name: mockProject.name,
+          author: mockProject.author,
+          description: mockProject.description,
+          logo: mockProject.logo,
+          repository: mockProject.repository,
+          technologies: mockProject.technologies,
+        } as ProtoProject);
+
+      expect(res.statusCode).toBe(codes.created);
+    });
+
+    test("Then it should create a new project and respond with it", async () => {
+      let newProject: any;
+
+      await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .send({
+          name: mockProject.name,
+          author: mockProject.author,
+          description: mockProject.description,
+          logo: mockProject.logo,
+          repository: mockProject.repository,
+          technologies: mockProject.technologies,
+        } as ProtoProject)
+        .then((data) => {
+          newProject = data;
+        });
+
+      expect(newProject.body.projectCreated).toHaveProperty("id");
+      expect(newProject.body.projectCreated).toHaveProperty("creationDate");
+
+      const res = await request(app).get(
+        `/projects/${newProject.body.projectCreated.id}`
+      );
+
+      expect(res.statusCode).toBe(codes.ok);
     });
   });
 });
