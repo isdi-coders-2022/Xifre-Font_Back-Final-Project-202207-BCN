@@ -115,7 +115,7 @@ describe("Given a getById function", () => {
       const expectedError = new CreateError(
         codes.notFound,
         "No projects found",
-        "Error while finding the project requested: "
+        "Error while finding the project requested"
       );
 
       await getById(req as Request, res as Response, next);

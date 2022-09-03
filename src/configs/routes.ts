@@ -10,4 +10,5 @@ export const endpoints = {
 
   getAllProjects: "/all",
   projectById: "/:projectId",
+  createProject: "/new",
 };
