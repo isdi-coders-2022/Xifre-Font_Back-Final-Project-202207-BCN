@@ -33,3 +33,27 @@ describe(`Given a /projects${endpoints.getAllProjects} route`, () => {
     });
   });
 });
+
+describe(`Given a /projects${endpoints.projectById} route`, () => {
+  describe("When requested with GET method", () => {
+    test(`Then it should respond with a status of '${codes.ok}'`, async () => {
+      const newProject = await Project.create({
+        name: mockProject.name,
+        description: mockProject.description,
+        repository: mockProject.repository,
+        author: mockProject.author,
+        logo: mockProject.logo,
+      });
+
+      const res = await request(app).get(`/projects/${newProject.id}`);
+
+      expect(res.statusCode).toBe(codes.ok);
+    });
+
+    test(`Then it should respond with a status of '${codes.notFound}' it there are no projects`, async () => {
+      const res = await request(app).get("/projects/falseid");
+
+      expect(res.statusCode).toBe(codes.notFound);
+    });
+  });
+});
