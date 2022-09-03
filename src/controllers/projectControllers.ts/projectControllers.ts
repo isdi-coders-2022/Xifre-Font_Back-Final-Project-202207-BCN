@@ -37,13 +37,19 @@ export const getById = async (
   try {
     const dbProject = await Project.findById(projectId);
 
+    if (!dbProject) {
+      res.status(codes.notFound).json({ projects: "No projects found" });
+      return;
+    }
+
     res.status(codes.ok).json({ project: dbProject });
   } catch (error) {
     const newError = new CreateError(
       codes.notFound,
       "No projects found",
-      `Error while finding the project requested: ${error.message}`
+      `Error while finding the project requested: `
     );
+
     next(newError);
   }
 };
