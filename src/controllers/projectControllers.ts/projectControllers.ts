@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import CreateError from "../../utils/CreateError/CreateError";
+import ProtoProject from "../types/projectControllers";
 
 export const getAllProjects = async (
   req: Request,
@@ -47,9 +48,30 @@ export const getById = async (
     const newError = new CreateError(
       codes.notFound,
       "No projects found",
-      `Error while finding the project requested: `
+      "Error while finding the project requested"
     );
 
+    next(newError);
+  }
+};
+
+export const createProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const newProject: ProtoProject = req.body;
+
+  try {
+    const finalProject = await Project.create(newProject);
+
+    res.status(codes.created).json({ projectCreated: finalProject });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.badRequest,
+      "Unable to create the project",
+      "Unable to create the project"
+    );
     next(newError);
   }
 };
