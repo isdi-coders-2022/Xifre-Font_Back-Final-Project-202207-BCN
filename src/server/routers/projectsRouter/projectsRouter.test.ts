@@ -15,6 +15,7 @@ describe(`Given a /projects${endpoints.getAllProjects} route`, () => {
         repository: mockProject.repository,
         author: mockProject.author,
         logo: mockProject.logo,
+        technologies: mockProject.technologies,
       });
 
       const res = await request(app).get(
@@ -43,6 +44,7 @@ describe(`Given a /projects${endpoints.projectById} route`, () => {
         repository: mockProject.repository,
         author: mockProject.author,
         logo: mockProject.logo,
+        technologies: mockProject.technologies,
       });
 
       const res = await request(app).get(`/projects/${newProject.id}`);
