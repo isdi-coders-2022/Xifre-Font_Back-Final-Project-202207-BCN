@@ -7,6 +7,7 @@ import {
   getAllProjects,
   getById,
 } from "../../../controllers/projectControllers/projectControllers";
+import { authentication } from "../../../middlewares/authentication/authentication";
 import getStringData from "../../../middlewares/getStringData/getStringData";
 import projectSchema from "../../../schemas/projectSchema";
 
@@ -21,6 +22,7 @@ projectsRouter.get(endpoints.getAllProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);
 projectsRouter.post(
   endpoints.createProject,
+  authentication,
   upload.single("logo"),
   getStringData,
   validate(projectSchema, {}, { abortEarly: false }),
