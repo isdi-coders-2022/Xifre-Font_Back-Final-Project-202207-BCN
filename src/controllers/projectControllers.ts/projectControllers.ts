@@ -60,18 +60,21 @@ export const createProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  const newProject: ProtoProject = req.body;
-  newProject.logo = `uploads\\${req.file.filename}`;
+  const newProject = req.body.project[0];
+
+  const curatedProject = await JSON.parse(newProject);
+
+  curatedProject.logo = `uploads\\${req.file.filename}`;
 
   try {
-    const finalProject = await Project.create(newProject);
+    const finalProject = await Project.create(curatedProject);
 
     res.status(codes.created).json({ projectCreated: finalProject });
   } catch (error) {
     const newError = new CreateError(
       codes.badRequest,
       "Unable to create the project",
-      "Unable to create the project"
+      `Unable to create the project: ${error.message}`
     );
     next(newError);
   }

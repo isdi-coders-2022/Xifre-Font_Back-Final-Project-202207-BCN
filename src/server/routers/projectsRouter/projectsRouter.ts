@@ -18,7 +18,7 @@ projectsRouter.get(endpoints.projectById, getById);
 projectsRouter.post(
   endpoints.createProject,
   upload.single("logo"),
-  validate(projectSchema, {}, { abortEarly: false }),
+  // validate(projectSchema, {}, { abortEarly: false }),
   createProject
 );
 
