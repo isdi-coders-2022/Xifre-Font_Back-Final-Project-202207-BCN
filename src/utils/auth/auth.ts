@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import Payload from "../../types/Payload";
 
 export const hashCreate = (password: string): Promise<string> => {
@@ -14,3 +14,6 @@ export const hashCompare = (
   dataToCompare: string,
   hash: string
 ): Promise<boolean> => bcrypt.compare(dataToCompare, hash);
+
+export const verifyToken = (token: string): string | JwtPayload =>
+  jwt.verify(token, process.env.AUTH_SECRET);
