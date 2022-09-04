@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import CreateError from "../../utils/CreateError/CreateError";
-import ProtoProject from "../types/projectControllers";
 
 export const getAllProjects = async (
   req: Request,
@@ -60,12 +59,6 @@ export const createProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  // const newProject = req.body.project[0];
-
-  // const curatedProject = await JSON.parse(newProject);
-
-  // curatedProject.logo = `uploads\\${req.file.filename}`;
-
   try {
     const finalProject = await Project.create(req.body);
 

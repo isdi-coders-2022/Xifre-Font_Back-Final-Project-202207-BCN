@@ -6,7 +6,7 @@ import {
   createProject,
   getAllProjects,
   getById,
-} from "../../../controllers/projectControllers.ts/projectControllers";
+} from "../../../controllers/projectControllers/projectControllers";
 import getStringData from "../../../middlewares/getStringData/getStringData";
 import projectSchema from "../../../schemas/projectSchema";
 
