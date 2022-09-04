@@ -5,7 +5,8 @@ const getStringData = async (
   res: Response,
   next: NextFunction
 ) => {
-  const newProject = req.body.project[0];
+  const newProject = req.body.project;
+
   const curatedProject = await JSON.parse(newProject);
 
   curatedProject.logo = `uploads\\${req.file.filename}`;

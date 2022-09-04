@@ -4,6 +4,7 @@ import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
 import ProtoProject from "../../../controllers/types/projectControllers";
 import { Project } from "../../../database/models/Project";
+import IProject from "../../../database/types/IProject";
 import mockProject from "../../../test-utils/mocks/mockProject";
 import "../../../testsSetup";
 
@@ -64,45 +65,72 @@ describe(`Given a /projects${endpoints.projectById} route`, () => {
 describe(`Given a /projects${endpoints.createProject} route`, () => {
   describe("When requested with POST method", () => {
     test(`Then it should respond with a status of '${codes.created}'`, async () => {
-      const res = await request(app)
+      await request(app)
         .post(`/projects/${endpoints.createProject}`)
-        .send({
-          name: mockProject.name,
-          author: mockProject.author,
-          description: mockProject.description,
-          logo: mockProject.logo,
-          repository: mockProject.repository,
-          technologies: mockProject.technologies,
-        } as ProtoProject);
-
-      expect(res.statusCode).toBe(codes.created);
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({
+            name: mockProject.name,
+            author: mockProject.author,
+            description: mockProject.description,
+            logo: mockProject.logo,
+            repository: mockProject.repository,
+            technologies: mockProject.technologies,
+          } as ProtoProject)
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .expect(codes.created);
     });
 
     test("Then it should create a new project and respond with it", async () => {
-      let newProject: any;
+      let newProject: IProject;
 
       await request(app)
         .post(`/projects/${endpoints.createProject}`)
-        .send({
-          name: mockProject.name,
-          author: mockProject.author,
-          description: mockProject.description,
-          logo: mockProject.logo,
-          repository: mockProject.repository,
-          technologies: mockProject.technologies,
-        } as ProtoProject)
-        .then((data) => {
-          newProject = data;
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({
+            name: mockProject.name,
+            author: mockProject.author,
+            description: mockProject.description,
+            logo: mockProject.logo,
+            repository: mockProject.repository,
+            technologies: mockProject.technologies,
+          } as ProtoProject)
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .then(({ body: { projectCreated } }) => {
+          newProject = projectCreated;
         });
 
-      expect(newProject.body.projectCreated).toHaveProperty("id");
-      expect(newProject.body.projectCreated).toHaveProperty("creationDate");
+      expect(newProject).toHaveProperty("id");
+      expect(newProject).toHaveProperty("creationDate");
 
-      const res = await request(app).get(
-        `/projects/${newProject.body.projectCreated.id}`
-      );
+      const res = await request(app).get(`/projects/${newProject.id}`);
 
       expect(res.statusCode).toBe(codes.ok);
+    });
+
+    test(`Then it should respond with a status of ${codes.badRequest} if the request was not valid`, async () => {
+      await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({
+            name: mockProject.name,
+          })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .expect(codes.badRequest);
     });
   });
 });
