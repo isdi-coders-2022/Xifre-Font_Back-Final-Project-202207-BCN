@@ -4,6 +4,7 @@ interface IUser {
   password: string;
   email: string;
   contacts: string[];
+  projects: string[];
 }
 
 export default IUser;

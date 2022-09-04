@@ -18,6 +18,8 @@ export const userSchema = new Schema<IUser>({
   },
 
   contacts: [String],
+
+  projects: [String],
 });
 
 export const User = model("User", userSchema, "users");
