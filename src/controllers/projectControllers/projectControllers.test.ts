@@ -130,7 +130,9 @@ describe("Given a getById function", () => {
 });
 
 describe("Given a createProject function", () => {
-  const req = {} as Partial<Request>;
+  const req = {
+    body: mockProject,
+  } as Partial<Request>;
   const res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
@@ -163,7 +165,7 @@ describe("Given a createProject function", () => {
       const expectedError = new CreateError(
         codes.badRequest,
         "Unable to create the project",
-        "Unable to create the project"
+        "Unable to create the project: "
       );
       await createProject(req as Request, res as Response, next);
 
