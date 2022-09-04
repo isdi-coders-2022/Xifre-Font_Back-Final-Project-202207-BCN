@@ -77,10 +77,12 @@ export const createProject = async (
       `Unable to create the project: ${error.message}`
     );
     next(newError);
+    return;
   }
 
   try {
     author = await User.findById(authorId);
+
     await User.findByIdAndUpdate(author.id, {
       projects: [...author.projects, finalProject.id],
     });
@@ -94,6 +96,7 @@ export const createProject = async (
     Project.findByIdAndDelete(finalProject.id);
 
     next(newError);
+    return;
   }
 
   res.status(codes.created).json({ projectCreated: finalProject });
