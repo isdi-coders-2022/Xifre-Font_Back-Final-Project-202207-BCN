@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
+import { User } from "../../database/models/User";
+import IProject from "../../database/types/IProject";
+import IUser from "../../database/types/IUser";
 import CreateError from "../../utils/CreateError/CreateError";
 
 export const getAllProjects = async (
@@ -59,10 +62,14 @@ export const createProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const finalProject = await Project.create(req.body);
+  let finalProject: IProject;
+  let author: IUser;
 
-    res.status(codes.created).json({ projectCreated: finalProject });
+  const { authorId } = req.body;
+  delete req.body.authorId;
+
+  try {
+    finalProject = await Project.create(req.body);
   } catch (error) {
     const newError = new CreateError(
       codes.badRequest,
@@ -70,5 +77,27 @@ export const createProject = async (
       `Unable to create the project: ${error.message}`
     );
     next(newError);
+    return;
   }
+
+  try {
+    author = await User.findById(authorId);
+
+    await User.findByIdAndUpdate(author.id, {
+      projects: [...author.projects, finalProject.id],
+    });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Couldn't assign an author to the project",
+      "The author doesn't exist"
+    );
+
+    Project.findByIdAndDelete(finalProject.id);
+
+    next(newError);
+    return;
+  }
+
+  res.status(codes.created).json({ projectCreated: finalProject });
 };
