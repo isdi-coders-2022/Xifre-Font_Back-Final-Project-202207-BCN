@@ -12,7 +12,10 @@ import projectSchema from "../../../schemas/projectSchema";
 
 const projectsRouter = express.Router();
 
-const upload = multer({ dest: "uploads", limits: { fileSize: 3000000 } });
+const upload = multer({
+  dest: "public/uploads",
+  limits: { fileSize: 3000000 },
+});
 
 projectsRouter.get(endpoints.getAllProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);

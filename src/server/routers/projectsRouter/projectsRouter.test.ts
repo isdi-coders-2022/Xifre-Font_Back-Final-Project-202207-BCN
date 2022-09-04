@@ -2,23 +2,16 @@ import request from "supertest";
 import app from "../..";
 import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
-import ProtoProject from "../../../controllers/types/projectControllers";
 import { Project } from "../../../database/models/Project";
 import IProject from "../../../database/types/IProject";
 import mockProject from "../../../test-utils/mocks/mockProject";
+import mockProtoProject from "../../../test-utils/mocks/mockProtoProject";
 import "../../../testsSetup";
 
 describe(`Given a /projects${endpoints.getAllProjects} route`, () => {
   describe("When requested with GET method", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
-      await Project.create({
-        name: mockProject.name,
-        description: mockProject.description,
-        repository: mockProject.repository,
-        author: mockProject.author,
-        logo: mockProject.logo,
-        technologies: mockProject.technologies,
-      });
+      await Project.create(mockProtoProject);
 
       const res = await request(app).get(
         `/projects${endpoints.getAllProjects}`
@@ -40,14 +33,7 @@ describe(`Given a /projects${endpoints.getAllProjects} route`, () => {
 describe(`Given a /projects${endpoints.projectById} route`, () => {
   describe("When requested with GET method", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
-      const newProject = await Project.create({
-        name: mockProject.name,
-        description: mockProject.description,
-        repository: mockProject.repository,
-        author: mockProject.author,
-        logo: mockProject.logo,
-        technologies: mockProject.technologies,
-      });
+      const newProject = await Project.create(mockProtoProject);
 
       const res = await request(app).get(`/projects/${newProject.id}`);
 
@@ -68,17 +54,7 @@ describe(`Given a /projects${endpoints.createProject} route`, () => {
       await request(app)
         .post(`/projects/${endpoints.createProject}`)
         .type("multipart/form-data")
-        .field(
-          "project",
-          JSON.stringify({
-            name: mockProject.name,
-            author: mockProject.author,
-            description: mockProject.description,
-            logo: mockProject.logo,
-            repository: mockProject.repository,
-            technologies: mockProject.technologies,
-          } as ProtoProject)
-        )
+        .field("project", JSON.stringify(mockProtoProject))
         .attach("logo", Buffer.from("fakeImage", "utf-8"), {
           filename: "logo.jpg",
         })
@@ -91,17 +67,7 @@ describe(`Given a /projects${endpoints.createProject} route`, () => {
       await request(app)
         .post(`/projects/${endpoints.createProject}`)
         .type("multipart/form-data")
-        .field(
-          "project",
-          JSON.stringify({
-            name: mockProject.name,
-            author: mockProject.author,
-            description: mockProject.description,
-            logo: mockProject.logo,
-            repository: mockProject.repository,
-            technologies: mockProject.technologies,
-          } as ProtoProject)
-        )
+        .field("project", JSON.stringify(mockProtoProject))
         .attach("logo", Buffer.from("fakeImage", "utf-8"), {
           filename: "logo.jpg",
         })
