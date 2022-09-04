@@ -1,11 +1,16 @@
+import "../../loadEnvironment";
 import bcrypt from "bcryptjs";
 import Payload from "../../types/Payload";
-import { createToken, hashCompare, hashCreate } from "./auth";
+import { createToken, hashCompare, hashCreate, verifyToken } from "./auth";
+
+const mockJwtPayload = { id: "", iat: 1512341253 };
 
 const mockSign = jest.fn().mockReturnValue("#");
+const mockVerify = jest.fn().mockReturnValue(mockJwtPayload);
 
 jest.mock("jsonwebtoken", () => ({
   sign: (payload: Payload) => mockSign(payload),
+  verify: (token: string) => mockVerify(token),
 }));
 
 describe("Given a hashCreate function", () => {
@@ -52,6 +57,17 @@ describe("Given a hashCompare function", () => {
 
       expect(bcrypt.compare).toHaveBeenCalledWith(hashToCompare, hash);
       expect(returnedValue).toBe("#");
+    });
+  });
+});
+
+describe("Given a verifyToken function", () => {
+  describe("When called with a strings (a token)", () => {
+    test("Then it should call jwt to verify it matches the secret and return a valid payload object", () => {
+      const returnedValue = verifyToken("token");
+
+      expect(mockVerify).toHaveBeenCalledWith("token");
+      expect(returnedValue).toBe(mockJwtPayload);
     });
   });
 });
