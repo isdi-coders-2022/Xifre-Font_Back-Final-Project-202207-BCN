@@ -7,6 +7,7 @@ import {
   getAllProjects,
   getById,
 } from "../../../controllers/projectControllers.ts/projectControllers";
+import getStringData from "../../../middlewares/getStringData/getStringData";
 import projectSchema from "../../../schemas/projectSchema";
 
 const projectsRouter = express.Router();
@@ -18,7 +19,8 @@ projectsRouter.get(endpoints.projectById, getById);
 projectsRouter.post(
   endpoints.createProject,
   upload.single("logo"),
-  // validate(projectSchema, {}, { abortEarly: false }),
+  getStringData,
+  validate(projectSchema, {}, { abortEarly: false }),
   createProject
 );
 
