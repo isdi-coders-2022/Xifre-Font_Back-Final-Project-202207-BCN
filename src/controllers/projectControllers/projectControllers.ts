@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { StringExpressionOperator } from "mongoose";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import { User } from "../../database/models/User";
@@ -157,39 +158,20 @@ export const deleteProject = async (
   next: NextFunction
 ) => {
   const { projectId } = req.params;
-  let projectToDelete: IProject;
-  let author: IUser;
+  const { deleteFromAuthor, authorProjects, authorId } = req.body;
 
   try {
-    projectToDelete = await Project.findById(projectId);
-    author = await User.findById(projectToDelete.authorId);
-  } catch (error) {
-    const newError = new CreateError(
-      codes.notFound,
-      "Couldn't delete any project",
-      `Project or user not found: ${error.message}`
-    );
-    next(newError);
-    return;
-  }
-
-  try {
-    const filteredProjects = author.projects.filter(
-      (project) => project !== projectId
-    );
-
-    await User.findByIdAndUpdate(projectToDelete.authorId, {
-      projects: filteredProjects,
-    });
-
     await Project.findByIdAndDelete(projectId);
 
-    res.status(codes.deleted).json({
-      projectDeleted: {
-        id: projectId,
-        status: "Deleted",
-      },
-    });
+    if (deleteFromAuthor) {
+      const filteredProjects = authorProjects.filter(
+        (project: string) => project !== projectId
+      );
+
+      await User.findByIdAndUpdate(authorId, {
+        projects: filteredProjects,
+      });
+    }
   } catch (error) {
     const newError = new CreateError(
       codes.notFound,
@@ -197,5 +179,13 @@ export const deleteProject = async (
       `Error while deleting the project: ${error.message}`
     );
     next(newError);
+    return;
   }
+
+  res.status(codes.deletedWithResponse).json({
+    projectDeleted: {
+      id: projectId,
+      status: "Deleted",
+    },
+  });
 };

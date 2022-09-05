@@ -11,6 +11,7 @@ import {
 } from "../../../controllers/projectControllers/projectControllers";
 import { authentication } from "../../../middlewares/authentication/authentication";
 import getStringData from "../../../middlewares/getStringData/getStringData";
+import validateDeleteRequest from "../../../middlewares/validateDeleteRequest/validateDeleteRequest";
 import projectSchema from "../../../schemas/projectSchema";
 
 const projectsRouter = express.Router();
@@ -33,6 +34,10 @@ projectsRouter.post(
   createProject
 );
 
-projectsRouter.delete(endpoints.deleteProject, deleteProject);
+projectsRouter.delete(
+  endpoints.deleteProject,
+  validateDeleteRequest,
+  deleteProject
+);
 
 export default projectsRouter;
