@@ -36,6 +36,7 @@ projectsRouter.post(
 
 projectsRouter.delete(
   endpoints.deleteProject,
+  authentication,
   validateDeleteRequest,
   deleteProject
 );
