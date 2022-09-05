@@ -161,6 +161,7 @@ describe("Given a createProject function", () => {
       .mockReturnValue({ id: mockUser.id, projects: mockUser.projects });
     User.findByIdAndUpdate = jest.fn();
     Project.findByIdAndDelete = jest.fn();
+
     test(`Then it should respond with a status of '${codes.created}'`, async () => {
       await createProject(req as Request, res as Response, next);
 

@@ -1,7 +1,7 @@
 import IUser from "../../database/types/IUser";
 
 const mockUser: IUser = {
-  id: "userId",
+  id: "6305fe53bvf81v5baop3e52d",
   name: "longusername",
   password: "longpassword123",
   email: "user@email.com",
