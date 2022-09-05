@@ -5,11 +5,13 @@ import { User } from "../../database/models/User";
 import mockProject from "../../test-utils/mocks/mockProject";
 import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
+import { CustomRequest } from "../authentication/authentication";
 import validateDeleteRequest from "./validateDeleteRequest";
 
 describe("Given a validateDeleteRequest function", () => {
   const req = {
     params: { projectId: mockProject.id },
+    payload: { id: mockUser.id },
     body: {},
   } as Partial<Request>;
   const res = {
@@ -23,7 +25,7 @@ describe("Given a validateDeleteRequest function", () => {
       Project.findById = jest.fn().mockReturnValue(mockProject);
       User.findById = jest.fn().mockReturnValue(mockUser);
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(next).toHaveBeenCalled();
     });
@@ -38,7 +40,7 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: mockUser.id,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -55,7 +57,7 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -72,7 +74,7 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -85,11 +87,11 @@ describe("Given a validateDeleteRequest function", () => {
 
       const expectedError = new CreateError(
         codes.notFound,
-        "Couldn't delete any project",
+        "Project or user not found",
         `Project not found: `
       );
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
     });
