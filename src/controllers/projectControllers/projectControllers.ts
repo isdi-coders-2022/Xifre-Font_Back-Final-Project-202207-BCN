@@ -150,3 +150,52 @@ export const getProjectsByAuthor = async (
     next(newError);
   }
 };
+
+export const deleteProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { projectId } = req.params;
+  let projectToDelete: IProject;
+  let author: IUser;
+
+  try {
+    projectToDelete = await Project.findById(projectId);
+    author = await User.findById(projectToDelete.authorId);
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Couldn't delete any project",
+      `Project or user not found: ${error.message}`
+    );
+    next(newError);
+    return;
+  }
+
+  try {
+    const filteredProjects = author.projects.filter(
+      (project) => project !== projectId
+    );
+
+    await User.findByIdAndUpdate(projectToDelete.authorId, {
+      projects: filteredProjects,
+    });
+
+    await Project.findByIdAndDelete(projectId);
+
+    res.status(codes.deleted).json({
+      projectDeleted: {
+        id: projectId,
+        status: "Deleted",
+      },
+    });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Couldn't delete any project",
+      `Error while deleting the project: ${error.message}`
+    );
+    next(newError);
+  }
+};

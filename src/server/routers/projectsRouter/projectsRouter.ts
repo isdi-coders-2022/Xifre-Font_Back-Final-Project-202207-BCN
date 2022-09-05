@@ -4,6 +4,7 @@ import multer from "multer";
 import { endpoints } from "../../../configs/routes";
 import {
   createProject,
+  deleteProject,
   getAllProjects,
   getById,
   getProjectsByAuthor,
@@ -22,6 +23,7 @@ const upload = multer({
 projectsRouter.get(endpoints.allProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);
 projectsRouter.get(endpoints.projectsByAuthor, getProjectsByAuthor);
+
 projectsRouter.post(
   endpoints.createProject,
   authentication,
@@ -30,5 +32,7 @@ projectsRouter.post(
   validate(projectSchema, {}, { abortEarly: false }),
   createProject
 );
+
+projectsRouter.delete(endpoints.deleteProject, deleteProject);
 
 export default projectsRouter;

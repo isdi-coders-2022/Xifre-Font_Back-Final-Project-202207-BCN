@@ -12,4 +12,5 @@ export const endpoints = {
   projectById: "/:projectId",
   createProject: "/new",
   projectsByAuthor: "/author/:userId",
+  deleteProject: "/delete/:projectId",
 };
