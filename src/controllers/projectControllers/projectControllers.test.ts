@@ -7,6 +7,7 @@ import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
 import {
   createProject,
+  deleteProject,
   getAllProjects,
   getById,
   getProjectsByAuthor,
@@ -351,6 +352,47 @@ describe("Given a getProjectsByAuthor function", () => {
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+});
+
+describe("Given a projectControllers function", () => {
+  const req = {
+    params: { projectId: mockProject.id },
+    body: {
+      deleteFromAuthor: true,
+      authorProjects: [mockProject],
+      authorId: mockProject.authorId,
+    },
+  } as Partial<Request>;
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+  const next = jest.fn() as NextFunction;
+
+  Project.findByIdAndDelete = jest.fn();
+
+  User.findByIdAndUpdate = jest.fn();
+
+  describe("When called with a request, a response and a next function as arguments", () => {
+    test(`Then it should call status with a status of '${codes.deletedWithResponse}'`, async () => {
+      await deleteProject(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(codes.deletedWithResponse);
+    });
+
+    test("Then it should respond with a success message", async () => {
+      await deleteProject(req as Request, res as Response, next);
+
+      const expectedResponse = {
+        projectDeleted: {
+          id: mockProject.id,
+          status: "Deleted",
+        },
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
 });

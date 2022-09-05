@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { StringExpressionOperator } from "mongoose";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import { User } from "../../database/models/User";

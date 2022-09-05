@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { Project } from "../../database/models/Project";
 import { User } from "../../database/models/User";
-import IProject from "../../database/types/IProject";
-import IUser from "../../database/types/IUser";
 import CreateError from "../../utils/CreateError/CreateError";
 
 const validateDeleteRequest = async (
