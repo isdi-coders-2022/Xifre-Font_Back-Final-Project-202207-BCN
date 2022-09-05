@@ -6,7 +6,7 @@ const mockUser: IUser = {
   password: "longpassword123",
   email: "user@email.com",
   contacts: ["contact_one", "contact_two"],
-  projects: ["project_one", "project_two"],
+  projects: ["630e31ecb968115ba6a3e29f", "630e31ecb968115ca6a3e29f"],
 };
 
 export default mockUser;
