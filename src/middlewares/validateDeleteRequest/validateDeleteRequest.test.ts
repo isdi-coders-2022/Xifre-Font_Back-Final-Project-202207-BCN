@@ -81,6 +81,14 @@ describe("Given a validateDeleteRequest function", () => {
   });
 
   describe("If finding a project or a user rejects with an error", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test("Then it should call next with an error", async () => {
       Project.findById = jest.fn().mockRejectedValue(new Error());
       User.findById = jest.fn().mockReturnValue(null);
@@ -88,12 +96,47 @@ describe("Given a validateDeleteRequest function", () => {
       const expectedError = new CreateError(
         codes.notFound,
         "Project or user not found",
-        `Project not found: `
+        "Project not found: "
       );
 
       await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("If the user requesting the delete and the project author don't match", () => {
+    test("Then it should call next with an error", async () => {
+      Project.findById = jest.fn().mockReturnValue(mockProject);
+      User.findById = jest.fn().mockReturnValue({ ...mockUser, projects: [] });
+
+      const reqWithPayload = {
+        params: { projectId: mockProject.id },
+        payload: { id: "" },
+        body: {},
+      } as Partial<Request>;
+
+      const expectedError = new CreateError(
+        codes.badRequest,
+        "Couldn't delete any project",
+        "The requesting user is not the author of the project"
+      );
+
+      await validateDeleteRequest(
+        reqWithPayload as CustomRequest,
+        res as Response,
+        next
+      );
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });
