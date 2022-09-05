@@ -148,7 +148,7 @@ export const getProjectsByAuthor = async (
     const newError = new CreateError(
       codes.notFound,
       "Unable to get the requested projects",
-      "Requesting user doesn't exist"
+      `Could't get any project: ${error.message}`
     );
     next(newError);
   }

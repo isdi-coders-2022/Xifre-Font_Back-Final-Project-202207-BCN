@@ -283,4 +283,73 @@ describe("Given a getProjectsByAuthor function", () => {
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
+
+  describe("When the user requesting does'nt exist", () => {
+    test(`It should call next with a ${codes.notFound} error`, async () => {
+      User.findById = jest.fn().mockRejectedValue(new Error());
+
+      const expectedError = new CreateError(
+        codes.notFound,
+        "Unable to get the requested projects",
+        "Requesting user doesn't exist"
+      );
+
+      await getProjectsByAuthor(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When the user requesting has no projects", () => {
+    test(`Then it should respond informing that there are no projects with a status of '${codes.notFound}'`, async () => {
+      Project.find = jest.fn().mockReturnValue([]);
+
+      User.findById = jest.fn().mockReturnValue({
+        id: mockUser.id,
+        projects: 0,
+      });
+
+      const expectedResponse = {
+        projectsByAuthor: {
+          author: mockUser.id,
+          total: "0 projects",
+        },
+      };
+
+      await getProjectsByAuthor(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
+      expect(res.status).toHaveBeenCalledWith(codes.notFound);
+    });
+  });
+
+  describe("When it's not possible to get any project from the user", () => {
+    test(`Then it should call next with a ${codes.notFound} error`, async () => {
+      jest.clearAllMocks();
+
+      User.findById = jest.fn().mockReturnValue({
+        id: mockUser.id,
+        projects: mockUser.projects,
+      });
+      Project.find = jest.fn().mockRejectedValue(new Error());
+
+      const expectedError = new CreateError(
+        codes.notFound,
+        "Unable to get the requested projects",
+        `Could't get any project: `
+      );
+
+      await getProjectsByAuthor(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
 });
