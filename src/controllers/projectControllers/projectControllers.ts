@@ -150,3 +150,41 @@ export const getProjectsByAuthor = async (
     next(newError);
   }
 };
+
+export const deleteProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { projectId } = req.params;
+  const { deleteFromAuthor, authorProjects, authorId } = req.body;
+
+  try {
+    await Project.findByIdAndDelete(projectId);
+
+    if (deleteFromAuthor) {
+      const filteredProjects = authorProjects.filter(
+        (project: string) => project !== projectId
+      );
+
+      await User.findByIdAndUpdate(authorId, {
+        projects: filteredProjects,
+      });
+    }
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Couldn't delete any project",
+      `Error while deleting the project: ${error.message}`
+    );
+    next(newError);
+    return;
+  }
+
+  res.status(codes.deletedWithResponse).json({
+    projectDeleted: {
+      id: projectId,
+      status: "Deleted",
+    },
+  });
+};

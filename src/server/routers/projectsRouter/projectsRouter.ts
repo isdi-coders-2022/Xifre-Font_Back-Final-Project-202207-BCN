@@ -4,12 +4,14 @@ import multer from "multer";
 import { endpoints } from "../../../configs/routes";
 import {
   createProject,
+  deleteProject,
   getAllProjects,
   getById,
   getProjectsByAuthor,
 } from "../../../controllers/projectControllers/projectControllers";
 import { authentication } from "../../../middlewares/authentication/authentication";
 import getStringData from "../../../middlewares/getStringData/getStringData";
+import validateDeleteRequest from "../../../middlewares/validateDeleteRequest/validateDeleteRequest";
 import projectSchema from "../../../schemas/projectSchema";
 
 const projectsRouter = express.Router();
@@ -22,6 +24,7 @@ const upload = multer({
 projectsRouter.get(endpoints.allProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);
 projectsRouter.get(endpoints.projectsByAuthor, getProjectsByAuthor);
+
 projectsRouter.post(
   endpoints.createProject,
   authentication,
@@ -29,6 +32,13 @@ projectsRouter.post(
   getStringData,
   validate(projectSchema, {}, { abortEarly: false }),
   createProject
+);
+
+projectsRouter.delete(
+  endpoints.deleteProject,
+  authentication,
+  validateDeleteRequest,
+  deleteProject
 );
 
 export default projectsRouter;
