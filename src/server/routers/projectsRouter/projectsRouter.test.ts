@@ -3,6 +3,7 @@ import app from "../..";
 import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
 import { Project } from "../../../database/models/Project";
+import { User } from "../../../database/models/User";
 import IProject from "../../../database/types/IProject";
 import IUser from "../../../database/types/IUser";
 import mockProject from "../../../test-utils/mocks/mockProject";
@@ -170,6 +171,36 @@ describe(`Given a /projects${endpoints.createProject} route`, () => {
           filename: "logo.jpg",
         })
         .expect(codes.internalServerError);
+    });
+  });
+});
+
+describe(`Given a /projects${endpoints.projectsByAuthor} route`, () => {
+  describe("When requested with GET method", () => {
+    test(`Then it should respond with a status of '${codes.ok}'`, async () => {
+      const mockDbProject = await Project.create(mockProtoProject);
+      const mockDbUser = await User.create({
+        ...mockUser,
+        projects: [mockDbProject.id],
+      });
+
+      const res = await request(app).get(`/projects/author/${mockDbUser.id}`);
+
+      expect(res.statusCode).toBe(codes.ok);
+    });
+
+    test(`Then it should respond with a status of '${codes.notFound}' if the requesting user doesn't exist`, async () => {
+      const res = await request(app).get(`/projects/author/${mockUser.id}`);
+
+      expect(res.statusCode).toBe(codes.notFound);
+    });
+
+    test(`Then it should respond with a status of '${codes.notFound}' if the user has no projects`, async () => {
+      const mockDbUser = await User.create(mockUser);
+
+      const res = await request(app).get(`/projects/author/${mockDbUser.id}`);
+
+      expect(res.statusCode).toBe(codes.notFound);
     });
   });
 });
