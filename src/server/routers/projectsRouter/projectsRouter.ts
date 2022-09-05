@@ -6,6 +6,7 @@ import {
   createProject,
   getAllProjects,
   getById,
+  getProjectsByAuthor,
 } from "../../../controllers/projectControllers/projectControllers";
 import { authentication } from "../../../middlewares/authentication/authentication";
 import getStringData from "../../../middlewares/getStringData/getStringData";
@@ -18,8 +19,9 @@ const upload = multer({
   limits: { fileSize: 3000000 },
 });
 
-projectsRouter.get(endpoints.getAllProjects, getAllProjects);
+projectsRouter.get(endpoints.allProjects, getAllProjects);
 projectsRouter.get(endpoints.projectById, getById);
+projectsRouter.get(endpoints.projectsByAuthor, getProjectsByAuthor);
 projectsRouter.post(
   endpoints.createProject,
   authentication,

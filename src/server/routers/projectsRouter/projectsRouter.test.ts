@@ -10,22 +10,18 @@ import mockProtoProject from "../../../test-utils/mocks/mockProtoProject";
 import mockUser from "../../../test-utils/mocks/mockUser";
 import "../../../testsSetup";
 
-describe(`Given a /projects${endpoints.getAllProjects} route`, () => {
+describe(`Given a /projects${endpoints.allProjects} route`, () => {
   describe("When requested with GET method", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
       await Project.create(mockProtoProject);
 
-      const res = await request(app).get(
-        `/projects${endpoints.getAllProjects}`
-      );
+      const res = await request(app).get(`/projects${endpoints.allProjects}`);
 
       expect(res.statusCode).toBe(codes.ok);
     });
 
     test(`Then it should respond with a status of '${codes.notFound}' it there are no projects`, async () => {
-      const res = await request(app).get(
-        `/projects${endpoints.getAllProjects}`
-      );
+      const res = await request(app).get(`/projects${endpoints.allProjects}`);
 
       expect(res.statusCode).toBe(codes.notFound);
     });

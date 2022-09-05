@@ -5,7 +5,12 @@ import { User } from "../../database/models/User";
 import mockProject from "../../test-utils/mocks/mockProject";
 import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
-import { createProject, getAllProjects, getById } from "./projectControllers";
+import {
+  createProject,
+  getAllProjects,
+  getById,
+  getProjectsByAuthor,
+} from "./projectControllers";
 
 describe("Given a getAllProjects function", () => {
   const req = {} as Partial<Request>;
@@ -140,12 +145,14 @@ describe("Given a createProject function", () => {
     json: jest.fn(),
   } as Partial<Response>;
   const next = jest.fn() as NextFunction;
+
   Project.create = jest.fn().mockReturnValue(mockProject);
+  Project.findByIdAndDelete = jest.fn();
+
   User.findById = jest
     .fn()
     .mockReturnValue({ id: mockUser.id, projects: mockUser.projects });
   User.findByIdAndUpdate = jest.fn();
-  Project.findByIdAndDelete = jest.fn();
 
   describe("When called with a request, a response and a next function", () => {
     Project.create = jest.fn().mockReturnValue(mockProject);
@@ -229,6 +236,51 @@ describe("Given a createProject function", () => {
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+});
+
+describe("Given a getProjectsByAuthor function", () => {
+  const req = {
+    params: { userId: mockUser.id },
+  } as Partial<Request>;
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+  const next = jest.fn() as NextFunction;
+
+  describe("When called with a request, a response and a next function as arguments", () => {
+    test(`Then it should call status with a status of ${codes.ok}`, async () => {
+      Project.find = jest.fn().mockReturnValue(mockUser.projects);
+
+      User.findById = jest
+        .fn()
+        .mockReturnValue({ id: mockUser.id, projects: mockUser.projects });
+
+      await getProjectsByAuthor(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
+    });
+
+    test("Then it should call json with a list of projects and extra information", async () => {
+      Project.find = jest.fn().mockReturnValue(mockUser.projects);
+
+      User.findById = jest
+        .fn()
+        .mockReturnValue({ id: mockUser.id, projects: mockUser.projects });
+
+      const expectedResponse = {
+        projectsByAuthor: {
+          author: mockUser.id,
+          total: mockUser.projects.length,
+          projects: mockUser.projects,
+        },
+      };
+
+      await getProjectsByAuthor(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
 });

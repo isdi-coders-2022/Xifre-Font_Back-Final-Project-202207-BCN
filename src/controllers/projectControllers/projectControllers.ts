@@ -101,3 +101,55 @@ export const createProject = async (
 
   res.status(codes.created).json({ projectCreated: finalProject });
 };
+
+export const getProjectsByAuthor = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.params;
+  let requestingUser: IUser;
+
+  try {
+    requestingUser = await User.findById(userId);
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Unable to get the requested projects",
+      "Requesting user doesn't exist"
+    );
+    next(newError);
+    return;
+  }
+
+  try {
+    const projects = await Project.find({
+      id: { $in: requestingUser.projects },
+    });
+
+    if (!projects.length) {
+      res.status(codes.notFound).json({
+        projectsByAuthor: {
+          author: userId,
+          total: "0 projects",
+        },
+      });
+      return;
+    }
+
+    res.status(codes.ok).json({
+      projectsByAuthor: {
+        author: userId,
+        total: projects.length,
+        projects,
+      },
+    });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Unable to get the requested projects",
+      "Requesting user doesn't exist"
+    );
+    next(newError);
+  }
+};

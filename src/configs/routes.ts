@@ -8,7 +8,8 @@ export const endpoints = {
   signUp: "/sign-up",
   getUserData: "/:userId",
 
-  getAllProjects: "/all",
+  allProjects: "/all",
   projectById: "/:projectId",
   createProject: "/new",
+  projectsByAuthor: "/author/:userId",
 };
