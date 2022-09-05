@@ -65,9 +65,6 @@ export const createProject = async (
   let finalProject: IProject;
   let author: IUser;
 
-  const { authorId } = req.body;
-  delete req.body.authorId;
-
   try {
     finalProject = await Project.create(req.body);
   } catch (error) {
@@ -81,7 +78,7 @@ export const createProject = async (
   }
 
   try {
-    author = await User.findById(authorId);
+    author = await User.findById(finalProject.authorId);
 
     await User.findByIdAndUpdate(author.id, {
       projects: [...author.projects, finalProject.id],

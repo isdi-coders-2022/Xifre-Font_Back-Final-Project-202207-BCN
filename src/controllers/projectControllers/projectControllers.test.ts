@@ -138,7 +138,7 @@ describe("Given a getById function", () => {
 
 describe("Given a createProject function", () => {
   const req = {
-    body: { ...mockProject, authorId: mockUser.id },
+    body: mockProject,
   } as Partial<Request>;
   const res = {
     status: jest.fn().mockReturnThis(),

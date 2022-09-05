@@ -5,6 +5,7 @@ interface IProject {
   technologies: string[];
   creationDate: Date;
   author: string;
+  authorId: string;
   description: string;
   logo: string;
 }
