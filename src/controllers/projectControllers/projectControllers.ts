@@ -80,7 +80,7 @@ export const createProject = async (
   try {
     author = await User.findById(finalProject.authorId);
 
-    await User.findByIdAndUpdate(author.id, {
+    await User.findByIdAndUpdate(finalProject.authorId, {
       projects: [...author.projects, finalProject.id],
     });
   } catch (error) {
@@ -121,7 +121,7 @@ export const getProjectsByAuthor = async (
 
   try {
     const projects = await Project.find({
-      id: { $in: requestingUser.projects },
+      _id: { $in: requestingUser.projects },
     });
 
     if (!projects.length) {
