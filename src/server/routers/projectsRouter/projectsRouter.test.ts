@@ -278,5 +278,14 @@ describe(`Given a /projects${endpoints.deleteProject} route`, () => {
         .set("Authorization", `Bearer ${authorizationToken}`)
         .expect(codes.deletedWithResponse);
     });
+
+    test(`Then it should respond with a status of ${codes.badRequest} if the client is not author of the project`, async () => {
+      const extraMockDbProject = await Project.create(mockProtoProject);
+
+      await request(app)
+        .delete(`/projects/delete/${extraMockDbProject.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .expect(codes.badRequest);
+    });
   });
 });

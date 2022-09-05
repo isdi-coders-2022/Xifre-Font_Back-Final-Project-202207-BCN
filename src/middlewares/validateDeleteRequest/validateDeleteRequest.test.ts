@@ -5,11 +5,13 @@ import { User } from "../../database/models/User";
 import mockProject from "../../test-utils/mocks/mockProject";
 import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
+import { CustomRequest } from "../authentication/authentication";
 import validateDeleteRequest from "./validateDeleteRequest";
 
 describe("Given a validateDeleteRequest function", () => {
   const req = {
     params: { projectId: mockProject.id },
+    payload: { id: mockUser.id },
     body: {},
   } as Partial<Request>;
   const res = {
@@ -23,7 +25,7 @@ describe("Given a validateDeleteRequest function", () => {
       Project.findById = jest.fn().mockReturnValue(mockProject);
       User.findById = jest.fn().mockReturnValue(mockUser);
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(next).toHaveBeenCalled();
     });
@@ -38,7 +40,7 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: mockUser.id,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -55,7 +57,7 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -72,26 +74,69 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(req.body).toStrictEqual(expectedBody);
     });
   });
 
   describe("If finding a project or a user rejects with an error", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test("Then it should call next with an error", async () => {
       Project.findById = jest.fn().mockRejectedValue(new Error());
       User.findById = jest.fn().mockReturnValue(null);
 
       const expectedError = new CreateError(
         codes.notFound,
-        "Couldn't delete any project",
-        `Project not found: `
+        "Project or user not found",
+        "Project not found: "
       );
 
-      await validateDeleteRequest(req as Request, res as Response, next);
+      await validateDeleteRequest(req as CustomRequest, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("If the user requesting the delete and the project author don't match", () => {
+    test("Then it should call next with an error", async () => {
+      Project.findById = jest.fn().mockReturnValue(mockProject);
+      User.findById = jest.fn().mockReturnValue({ ...mockUser, projects: [] });
+
+      const reqWithPayload = {
+        params: { projectId: mockProject.id },
+        payload: { id: "" },
+        body: {},
+      } as Partial<Request>;
+
+      const expectedError = new CreateError(
+        codes.badRequest,
+        "Couldn't delete any project",
+        "The requesting user is not the author of the project"
+      );
+
+      await validateDeleteRequest(
+        reqWithPayload as CustomRequest,
+        res as Response,
+        next
+      );
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });
