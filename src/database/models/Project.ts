@@ -26,6 +26,11 @@ export const projectSchema = new Schema<IProject>({
     required: true,
   },
 
+  authorId: {
+    type: String,
+    required: true,
+  },
+
   creationDate: {
     type: Date,
     default: Date.now,
