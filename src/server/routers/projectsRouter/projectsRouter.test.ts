@@ -204,3 +204,79 @@ describe(`Given a /projects${endpoints.projectsByAuthor} route`, () => {
     });
   });
 });
+
+describe(`Given a /projects${endpoints.deleteProject} route`, () => {
+  let author: IUser;
+  let authorizationToken: string;
+  let project: IProject;
+
+  beforeEach(async () => {
+    await request(app)
+      .post(`/users${endpoints.signUp}`)
+      .send({
+        name: mockUser.name,
+        password: mockUser.password,
+        email: mockUser.email,
+      })
+      .then(({ body: { newUser } }) => {
+        author = newUser;
+      });
+
+    await request(app)
+      .post(`/users${endpoints.logIn}`)
+      .send({
+        name: mockUser.name,
+        password: mockUser.password,
+      })
+      .then(
+        ({
+          body: {
+            user: { token },
+          },
+        }) => {
+          authorizationToken = token;
+        }
+      );
+
+    await request(app)
+      .post(`/projects/${endpoints.createProject}`)
+      .set("Authorization", `Bearer ${authorizationToken}`)
+      .type("multipart/form-data")
+      .field(
+        "project",
+        JSON.stringify({ ...mockProtoProject, authorId: author.id })
+      )
+      .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+        filename: "logo.jpg",
+      })
+      .expect(codes.created)
+      .then(({ body: { projectCreated } }) => {
+        project = projectCreated;
+      });
+  });
+
+  describe("When requested with DELETE method", () => {
+    test(`Then it should respond with a status of '${codes.deletedWithResponse}'`, async () => {
+      await request(app)
+        .delete(`/projects/delete/${project.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .expect(codes.deletedWithResponse);
+    });
+
+    test(`Then it should respond with a status of '${codes.created}' if the project was not found`, async () => {
+      await request(app)
+        .delete(`/projects/delete/randomId`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .expect(codes.notFound);
+    });
+
+    test("Then it should delete the project even if the author doesn't exist", async () => {
+      await User.findByIdAndDelete(author.id);
+
+      await request(app)
+        .delete(`/projects/delete/${project.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .expect(codes.deletedWithResponse);
+    });
+  });
+});

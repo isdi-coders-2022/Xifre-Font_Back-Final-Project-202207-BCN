@@ -361,7 +361,7 @@ describe("Given a projectControllers function", () => {
     params: { projectId: mockProject.id },
     body: {
       deleteFromAuthor: true,
-      authorProjects: [mockProject],
+      authorProjects: mockUser.projects,
       authorId: mockProject.authorId,
     },
   } as Partial<Request>;
@@ -393,6 +393,51 @@ describe("Given a projectControllers function", () => {
       };
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+
+    test("Then it should delete the project from the author projects", async () => {
+      await deleteProject(req as Request, res as Response, next);
+
+      expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
+        mockProject.authorId,
+        { projects: [mockUser.projects[1]] }
+      );
+    });
+  });
+
+  describe("When called and the request doesn't command to delete the project from the author", () => {
+    test("Then it should call the method to delete the project from the user project list", async () => {
+      jest.restoreAllMocks();
+      jest.clearAllMocks();
+
+      const reqWithoutAuthor = {
+        params: { projectId: mockProject.id },
+        body: {
+          deleteFromAuthor: false,
+          authorProjects: undefined,
+          authorId: undefined,
+        },
+      } as Partial<Request>;
+
+      await deleteProject(reqWithoutAuthor as Request, res as Response, next);
+
+      expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("When called but an error occurs while deleting the project or updating the user", () => {
+    test("Then it should call next with an error", async () => {
+      Project.findByIdAndDelete = jest.fn().mockRejectedValue(new Error());
+
+      const expectedError = new CreateError(
+        codes.notFound,
+        "Couldn't delete any project",
+        "Error while deleting the project: "
+      );
+
+      await deleteProject(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
