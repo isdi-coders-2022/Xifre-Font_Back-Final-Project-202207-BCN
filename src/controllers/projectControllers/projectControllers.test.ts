@@ -11,6 +11,7 @@ import {
   getAllProjects,
   getById,
   getProjectsByAuthor,
+  updateProject,
 } from "./projectControllers";
 
 describe("Given a getAllProjects function", () => {
@@ -438,6 +439,64 @@ describe("Given a projectControllers function", () => {
       await deleteProject(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+});
+
+describe("Given a updateProject controller", () => {
+  const req = {
+    body: mockProject,
+  } as Partial<Request>;
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const next = jest.fn() as NextFunction;
+
+  describe("When called with a request, a response and a next function", () => {
+    test(`Then it should respond with a status code of ${codes.updatedWithResponse}`, async () => {
+      Project.findByIdAndUpdate = jest
+        .fn()
+        .mockReturnValue({ ...mockProject, name: "Updated name" });
+
+      await updateProject(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(codes.updatedWithResponse);
+    });
+
+    test("Then it should respond with the updated project", async () => {
+      Project.findByIdAndUpdate = jest
+        .fn()
+        .mockReturnValue({ ...mockProject, name: "Updated name" });
+
+      const expectedResponse = {
+        updatedProject: { ...mockProject, name: "Updated name" },
+      };
+      await updateProject(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+  });
+
+  describe("When called but it was not possible to update the project", () => {
+    test("Then it should call next with an error", async () => {
+      Project.findByIdAndUpdate = jest.fn().mockRejectedValue(new Error());
+
+      await updateProject(req as Request, res as Response, next);
+
+      const expectedError = new CreateError(
+        codes.badRequest,
+        "Couldn't updated any project",
+        "Error while updating the project: "
+      );
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });

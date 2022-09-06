@@ -8,6 +8,7 @@ import {
   getAllProjects,
   getById,
   getProjectsByAuthor,
+  updateProject,
 } from "../../../controllers/projectControllers/projectControllers";
 import { authentication } from "../../../middlewares/authentication/authentication";
 import getStringData from "../../../middlewares/getStringData/getStringData";
@@ -40,5 +41,7 @@ projectsRouter.delete(
   validateDeleteRequest,
   deleteProject
 );
+
+projectsRouter.put(endpoints.updateProject, updateProject);
 
 export default projectsRouter;
