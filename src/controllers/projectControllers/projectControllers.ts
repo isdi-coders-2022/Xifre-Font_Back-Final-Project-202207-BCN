@@ -194,11 +194,10 @@ export const updateProject = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { projectId } = req.params;
-  const { project } = req.body;
+  const project = req.body as IProject;
 
   try {
-    const updatedProject = await Project.findByIdAndUpdate(projectId, project);
+    const updatedProject = await Project.findByIdAndUpdate(project.id, project);
 
     res.status(codes.updatedWithResponse).json({ updatedProject });
   } catch (error) {
