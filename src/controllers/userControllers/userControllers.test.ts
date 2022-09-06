@@ -6,7 +6,7 @@ import CreateError from "../../utils/CreateError/CreateError";
 import prepareToken from "../../utils/prepareToken/prepareToken";
 import { getUserData, logIn, signUp } from "./userControllers";
 
-let mockHashCompareValue: any = true;
+let mockHashCompareValue: boolean | jest.Mock<boolean> = true;
 
 jest.mock("../../utils/auth/auth", () => ({
   ...jest.requireActual("../../utils/auth/auth"),
@@ -100,7 +100,7 @@ describe("Given a log in function (controller)", () => {
     jest.clearAllMocks();
   });
 
-  const mockLoginData: any = {
+  const mockLoginData = {
     name: mockUser.name,
     password: mockUser.password,
   };

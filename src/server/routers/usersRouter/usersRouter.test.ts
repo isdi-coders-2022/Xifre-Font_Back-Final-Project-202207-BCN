@@ -5,6 +5,7 @@ import { User } from "../../../database/models/User";
 import mockUser from "../../../test-utils/mocks/mockUser";
 import codes from "../../../configs/codes";
 import { endpoints } from "../../../configs/routes";
+import IUser from "../../../database/types/IUser";
 
 describe(`Given a /users${endpoints.signUp} route`, () => {
   describe("When requested with POST method and user register data", () => {
@@ -94,7 +95,7 @@ describe(`Given a /users${endpoints.logIn} route`, () => {
 describe(`Given a /users/${endpoints.getUserData} route`, () => {
   describe("When requested with GET method and a user id as param", () => {
     test(`Then it should respond with a status of ${codes.ok}`, async () => {
-      let user: any;
+      let user: IUser;
 
       await request(app)
         .post(`/users/${endpoints.signUp}`)
@@ -104,10 +105,10 @@ describe(`Given a /users/${endpoints.getUserData} route`, () => {
           email: mockUser.email,
         })
         .then((data) => {
-          user = data;
+          user = data.body.newUser;
         });
 
-      const res = await request(app).get(`/users/${user.body.newUser.id}`);
+      const res = await request(app).get(`/users/${user.id}`);
 
       expect(res.statusCode).toBe(codes.ok);
     });
