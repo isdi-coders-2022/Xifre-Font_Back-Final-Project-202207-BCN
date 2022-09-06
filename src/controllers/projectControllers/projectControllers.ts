@@ -188,3 +188,25 @@ export const deleteProject = async (
     },
   });
 };
+
+export const updateProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { projectId } = req.params;
+  const { project } = req.body;
+
+  try {
+    const updatedProject = await Project.findByIdAndUpdate(projectId, project);
+
+    res.status(codes.updatedWithResponse).json({ updatedProject });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.badRequest,
+      "Couldn't updated any project",
+      `Error while updating the project: ${error.message}`
+    );
+    next(newError);
+  }
+};
