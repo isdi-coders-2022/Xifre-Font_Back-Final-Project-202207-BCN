@@ -445,7 +445,8 @@ describe("Given a projectControllers function", () => {
 
 describe("Given a updateProject controller", () => {
   const req = {
-    body: mockProject,
+    body: { ...mockProject, name: "Updated name" },
+    params: { projectId: mockProject.id },
   } as Partial<Request>;
 
   const res = {
@@ -455,11 +456,11 @@ describe("Given a updateProject controller", () => {
 
   const next = jest.fn() as NextFunction;
 
+  Project.replaceOne = jest.fn();
+
   describe("When called with a request, a response and a next function", () => {
     test(`Then it should respond with a status code of ${codes.updatedWithResponse}`, async () => {
-      Project.findByIdAndUpdate = jest
-        .fn()
-        .mockReturnValue({ ...mockProject, name: "Updated name" });
+      Project.findById = jest.fn().mockReturnValue(mockProject);
 
       await updateProject(req as Request, res as Response, next);
 
@@ -467,9 +468,7 @@ describe("Given a updateProject controller", () => {
     });
 
     test("Then it should respond with the updated project", async () => {
-      Project.findByIdAndUpdate = jest
-        .fn()
-        .mockReturnValue({ ...mockProject, name: "Updated name" });
+      Project.findById = jest.fn().mockReturnValue(mockProject);
 
       const expectedResponse = {
         updatedProject: { ...mockProject, name: "Updated name" },
@@ -482,7 +481,7 @@ describe("Given a updateProject controller", () => {
 
   describe("When called but it was not possible to update the project", () => {
     test("Then it should call next with an error", async () => {
-      Project.findByIdAndUpdate = jest.fn().mockRejectedValue(new Error());
+      Project.findById = jest.fn().mockRejectedValue(new Error());
 
       await updateProject(req as Request, res as Response, next);
 

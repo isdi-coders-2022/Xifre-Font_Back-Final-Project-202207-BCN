@@ -42,6 +42,14 @@ projectsRouter.delete(
   deleteProject
 );
 
+projectsRouter.put(
+  endpoints.updateProject,
+  authentication,
+  upload.single("logo"),
+  getStringData,
+  updateProject
+);
+
 projectsRouter.put(endpoints.updateProject, updateProject);
 
 export default projectsRouter;
