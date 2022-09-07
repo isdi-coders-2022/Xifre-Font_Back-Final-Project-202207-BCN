@@ -29,7 +29,13 @@ export const getAllProjects = async (
       return;
     }
 
-    res.status(codes.ok).json({ projects: allProjects });
+    res.status(codes.ok).json({
+      projects: {
+        offset: query[0],
+        limit: query[1],
+        list: allProjects,
+      },
+    });
   } catch (error) {
     const newError = new CreateError(
       codes.notFound,
