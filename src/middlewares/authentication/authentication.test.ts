@@ -6,15 +6,17 @@ import Payload from "../../types/Payload";
 import CreateError from "../../utils/CreateError/CreateError";
 import { authentication, CustomRequest } from "./authentication";
 
-let mockJwtPayload: string | JwtPayload = {
-  id: mockUser.id,
-  name: mockUser.name,
-  iat: 1516239022,
-} as JwtPayload;
+let mockJwtPayload: (token: string) => void | jest.Mock = jest
+  .fn()
+  .mockReturnValue({
+    id: mockUser.id,
+    name: mockUser.name,
+    iat: 1516239022,
+  } as JwtPayload);
 
 jest.mock("../../utils/auth/auth", () => ({
   ...jest.requireActual("../../utils/auth/auth"),
-  verifyToken: () => mockJwtPayload,
+  verifyToken: (token: string) => mockJwtPayload(token),
 }));
 
 describe("Given a authentication function", () => {
@@ -32,6 +34,8 @@ describe("Given a authentication function", () => {
 
   describe("When called with req, res and next as arguments", () => {
     test("Then it should call the next function", () => {
+      jest.clearAllMocks();
+
       authentication(
         req as CustomRequest,
         res as Response,
@@ -85,10 +89,25 @@ describe("Given a authentication function", () => {
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
+
+    test("It should call the verify token function with a token", () => {
+      jest.restoreAllMocks();
+      jest.clearAllMocks();
+
+      req.get = jest.fn().mockReturnValue("Bearer #");
+
+      authentication(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(mockJwtPayload).toHaveBeenCalledWith("#");
+    });
   });
 
   describe("When called but the token is not valid and verification return a string", () => {
-    test("It should call next with an error", async () => {
+    test("It should call next with an error", () => {
       jest.clearAllMocks();
 
       const mockReq = {
@@ -102,7 +121,9 @@ describe("Given a authentication function", () => {
         "Invalid token"
       );
 
-      mockJwtPayload = "Error";
+      mockJwtPayload = () => {
+        throw new Error();
+      };
 
       authentication(
         mockReq as CustomRequest,
