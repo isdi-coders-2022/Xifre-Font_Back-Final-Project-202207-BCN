@@ -15,3 +15,14 @@ export const endpoints = {
   deleteProject: "/delete/:projectId",
   updateProject: "/update/:projectId",
 };
+
+export const queries = {
+  offset: {
+    type: "number",
+    default: 0,
+  },
+  limit: {
+    type: "number",
+    default: 10,
+  },
+};
