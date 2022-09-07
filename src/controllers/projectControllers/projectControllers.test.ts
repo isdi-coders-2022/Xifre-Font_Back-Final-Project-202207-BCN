@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
+import { queries } from "../../configs/routes";
 import { Project } from "../../database/models/Project";
 import { User } from "../../database/models/User";
 import mockProject from "../../test-utils/mocks/mockProject";
@@ -15,13 +16,20 @@ import {
 } from "./projectControllers";
 
 describe("Given a getAllProjects function", () => {
-  const req = {} as Partial<Request>;
+  const req = {
+    query: {},
+  } as Partial<Request>;
   const res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
   const next = jest.fn() as NextFunction;
-  Project.find = jest.fn().mockReturnValue([mockProject]);
+
+  Project.find = jest.fn().mockReturnValue({
+    skip: jest.fn().mockReturnValue({
+      limit: jest.fn().mockReturnValue([mockProject]),
+    }),
+  });
 
   describe("When called with a request, a response and a next function", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
@@ -32,7 +40,11 @@ describe("Given a getAllProjects function", () => {
 
     test(`Then it should respond with all the projects found`, async () => {
       const expectedResponse = {
-        projects: [mockProject],
+        projects: {
+          offset: queries.offset.default,
+          limit: queries.limit.default,
+          list: [mockProject],
+        },
       };
       await getAllProjects(req as Request, res as Response, next);
 
@@ -42,7 +54,11 @@ describe("Given a getAllProjects function", () => {
 
   describe("When called but the database doesn't return any valid data", () => {
     test("Then it should call next with an error", async () => {
-      Project.find = jest.fn().mockRejectedValue(new Error());
+      Project.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockRejectedValue(new Error()),
+        }),
+      });
 
       const expectedError = new CreateError(
         codes.notFound,
@@ -62,7 +78,11 @@ describe("Given a getAllProjects function", () => {
 
   describe("When called but there are no projects avaliable", () => {
     test(`Then it should respond informing that there are no projects with code '${codes.notFound}'`, async () => {
-      Project.find = jest.fn().mockReturnValue([]);
+      Project.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue([]),
+        }),
+      });
 
       const expectedResponse = {
         projects: "No projects found",

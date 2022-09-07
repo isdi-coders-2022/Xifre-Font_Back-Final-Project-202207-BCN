@@ -4,6 +4,7 @@ import { Project } from "../../database/models/Project";
 import { User } from "../../database/models/User";
 import IProject from "../../database/types/IProject";
 import IUser from "../../database/types/IUser";
+import checkQueries from "../../utils/checkQueries/checkQueries";
 import CreateError from "../../utils/CreateError/CreateError";
 
 export const getAllProjects = async (
@@ -11,15 +12,30 @@ export const getAllProjects = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { offset, limit } = req.query;
+
+  const query = checkQueries(
+    { key: "offset", value: offset as string },
+    { key: "limit", value: limit as string }
+  );
+
   try {
-    const allProjects = await Project.find({});
+    const allProjects = await Project.find({})
+      .skip(+query[0])
+      .limit(+query[1]);
 
     if (!allProjects.length) {
       res.status(codes.notFound).json({ projects: "No projects found" });
       return;
     }
 
-    res.status(codes.ok).json({ projects: allProjects });
+    res.status(codes.ok).json({
+      projects: {
+        offset: query[0],
+        limit: query[1],
+        list: allProjects,
+      },
+    });
   } catch (error) {
     const newError = new CreateError(
       codes.notFound,
