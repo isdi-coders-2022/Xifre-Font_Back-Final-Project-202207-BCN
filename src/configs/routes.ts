@@ -25,4 +25,8 @@ export const queries = {
     type: "number",
     default: 10,
   },
+  technology: {
+    type: "string",
+    default: "react",
+  },
 };

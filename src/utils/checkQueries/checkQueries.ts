@@ -15,7 +15,7 @@ const checkQueries = (...reqQuery: Array<QueryValue>) =>
     .filter((query) => queries[query.key] !== undefined)
     .map((query) =>
       queries[query.key].type === "number"
-        ? setValue(query.value, queries[query.key].default)
+        ? setValue(query.value, queries[query.key].default as number)
         : query.value
     );
 
