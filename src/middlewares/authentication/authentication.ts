@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import codes from "../../configs/codes";
 import Payload from "../../types/Payload";
 import { verifyToken } from "../../utils/auth/auth";
@@ -26,10 +27,11 @@ export const authentication = (
   }
 
   const token = dataAuthentication.slice(7);
+  let tokenData: string | JwtPayload;
 
-  const tokenData = verifyToken(token);
-
-  if (typeof tokenData === "string") {
+  try {
+    tokenData = verifyToken(token);
+  } catch (error) {
     const newError = new CreateError(
       codes.internalServerError,
       "Authentication error",
