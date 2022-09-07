@@ -289,3 +289,143 @@ describe(`Given a /projects${endpoints.deleteProject} route`, () => {
     });
   });
 });
+
+describe(`Given a /projects${endpoints.updateProject} route`, () => {
+  let author: IUser;
+  let authorizationToken: string;
+
+  beforeEach(async () => {
+    await request(app)
+      .post(`/users${endpoints.signUp}`)
+      .send({
+        name: mockUser.name,
+        password: mockUser.password,
+        email: mockUser.email,
+      })
+      .then(({ body: { newUser } }) => {
+        author = newUser;
+      });
+
+    await request(app)
+      .post(`/users${endpoints.logIn}`)
+      .send({
+        name: mockUser.name,
+        password: mockUser.password,
+      })
+      .then(
+        ({
+          body: {
+            user: { token },
+          },
+        }) => {
+          authorizationToken = token;
+        }
+      );
+  });
+
+  describe("When requested with PUT method", () => {
+    test(`Then it should respond with a status of '${codes.ok}'`, async () => {
+      let project: IProject;
+
+      await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .then(({ body: { projectCreated } }) => {
+          project = projectCreated;
+        });
+
+      await request(app)
+        .put(`/projects/update/${project.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .expect(codes.ok);
+    });
+
+    test("Then it should update the project and respond with it", async () => {
+      let project: IProject;
+      let updated: IProject;
+
+      await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .then(({ body: { projectCreated } }) => {
+          project = projectCreated;
+        });
+
+      await request(app)
+        .put(`/projects/update/${project.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
+        })
+        .then(({ body: { updatedProject } }) => {
+          updated = updatedProject;
+        });
+
+      expect(updated).toHaveProperty("name");
+      expect(updated).toHaveProperty("creationDate");
+    });
+  });
+
+  test(`Then it should respond with a status of ${codes.badRequest} if the request was not valid`, async () => {
+    await request(app)
+      .put("/projects/update/randomId")
+      .set("Authorization", `Bearer ${authorizationToken}`)
+      .type("multipart/form-data")
+      .field(
+        "project",
+        JSON.stringify({ ...mockProtoProject, authorId: author.id })
+      )
+      .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+        filename: "logo.jpg",
+      })
+      .expect(codes.badRequest);
+  });
+});
+
+describe("When requested with PUT method but the client is not authenticated", () => {
+  test(`Then it should respond with a status of ${codes.internalServerError}`, async () => {
+    await request(app)
+      .post(`/projects/${endpoints.createProject}`)
+      .type("multipart/form-data")
+      .field(
+        "project",
+        JSON.stringify({
+          ...mockProtoProject,
+          authorId: "",
+        })
+      )
+      .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+        filename: "logo.jpg",
+      })
+      .expect(codes.internalServerError);
+  });
+});

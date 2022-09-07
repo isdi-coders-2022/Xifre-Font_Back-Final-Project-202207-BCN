@@ -47,6 +47,7 @@ projectsRouter.put(
   authentication,
   upload.single("logo"),
   getStringData,
+  validate(projectSchema, {}, { abortEarly: false }),
   updateProject
 );
 
