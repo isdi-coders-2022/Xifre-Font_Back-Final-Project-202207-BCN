@@ -94,6 +94,24 @@ describe("Given a getAllProjects function", () => {
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
+
+  describe("@hen called with a query of technology 'react'", () => {
+    test("Then it should find all projects that have a 'react' as technology", async () => {
+      const reqQuery = {
+        query: { technology: "react" },
+      } as Partial<Request>;
+
+      Project.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue([]),
+        }),
+      });
+
+      await getAllProjects(reqQuery as Request, res as Response, next);
+
+      expect(Project.find).toHaveBeenCalledWith({ technologies: "react" });
+    });
+  });
 });
 
 describe("Given a getById function", () => {

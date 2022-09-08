@@ -27,6 +27,6 @@ export const queries = {
   },
   technology: {
     type: "string",
-    default: "react",
+    default: "",
   },
 };

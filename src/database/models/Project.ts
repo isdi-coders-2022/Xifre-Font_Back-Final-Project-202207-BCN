@@ -38,6 +38,7 @@ export const projectSchema = new Schema<IProject>({
 
   logo: {
     type: String,
+    required: true,
   },
 });
 
