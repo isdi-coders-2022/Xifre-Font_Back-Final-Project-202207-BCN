@@ -5,6 +5,7 @@ import usersRouter from "./routers/usersRouter/usersRouter";
 import generalError from "../middlewares/generalError/generalError";
 import { routers } from "../configs/routes";
 import projectsRouter from "./routers/projectsRouter/projectsRouter";
+import environment from "../configs/environment";
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.disable("x-powered-by");
 
 app.use(
   cors({
-    origin: process.env.CLIENT,
+    origin: environment.client,
   })
 );
 app.use(morgan("dev"));

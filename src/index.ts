@@ -3,17 +3,15 @@ import Debug from "debug";
 import chalk from "chalk";
 import startServer from "./server/startServer";
 import connectDB from "./database";
+import environment from "./configs/environment";
 
 const debug = Debug("widescope:index");
-
-const port = +process.env.PORT ?? 4000;
-const database = process.env.MONGO_DB;
 
 (async () => {
   debug(chalk.gray("Starting server and connecting to the database"));
   try {
-    await connectDB(database);
-    await startServer(port);
+    await connectDB(environment.database);
+    await startServer(environment.port);
   } catch (error) {
     debug(chalk.red("Error while starting the server and the database"));
     process.exit(5);
