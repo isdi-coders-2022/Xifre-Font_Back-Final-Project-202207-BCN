@@ -11,7 +11,7 @@ const debug = Debug("widescope:index");
   debug(chalk.gray("Starting server and connecting to the database"));
   try {
     await connectDB(environment.database);
-    await startServer(environment.port);
+    await startServer(environment.port ?? 4000);
   } catch (error) {
     debug(chalk.red("Error while starting the server and the database"));
     process.exit(5);

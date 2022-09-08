@@ -2,7 +2,7 @@ import "../loadEnvironment";
 
 const environment = {
   debug: process.env.DEBUG,
-  port: +process.env.PORT ?? 4000,
+  port: +process.env.PORT,
   database: process.env.MONGO_DB,
   secret: process.env.AUTH_SECRET,
   client: process.env.CLIENT,
