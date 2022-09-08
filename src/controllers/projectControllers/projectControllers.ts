@@ -12,20 +12,25 @@ export const getAllProjects = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { offset, limit } = req.query;
+  const { offset, limit, technology } = req.query;
 
   const query = checkQueries(
     { key: "offset", value: offset as string },
-    { key: "limit", value: limit as string }
+    { key: "limit", value: limit as string },
+    { key: "technology", value: technology as string }
   );
 
+  const queries = technology ? { technologies: query[2] } : {};
+
   try {
-    const allProjects = await Project.find({})
+    const allProjects = await Project.find(queries)
       .skip(+query[0])
       .limit(+query[1]);
 
     if (!allProjects.length) {
-      res.status(codes.notFound).json({ projects: "No projects found" });
+      res.status(codes.notFound).json({
+        projects: "No projects found",
+      });
       return;
     }
 
