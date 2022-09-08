@@ -1,0 +1,259 @@
+{
+  "info": {
+    "_postman_id": "21b98b5c-ddc3-4603-b428-e9f99bf61ffe",
+    "name": "Widescope Back",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21188607"
+  },
+  "item": [
+    {
+      "name": "Sign up",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"asdfasdfasdf\",\n    \"password\": \"1234563456789123456\",\n    \"email\": \"asdfasdf@asdfasdf.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{productionUrl}}users/630e31ecb9f68115ba6a3e29f",
+          "host": ["{{productionUrl}}users"],
+          "path": ["630e31ecb9f68115ba6a3e29f"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Log in",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Pedro\",\n    \"password\": \"12341234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{productionUrl}}users/log-in",
+          "host": ["{{productionUrl}}users"],
+          "path": ["log-in"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get user by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{productionUrl}}users/:userId",
+          "host": ["{{productionUrl}}users"],
+          "path": [":userId"],
+          "variable": [
+            {
+              "key": "userId",
+              "value": null
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get project by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{localhost}}projects/63147ecb53bd3babf5e012a5",
+          "host": ["{{localhost}}projects"],
+          "path": ["63147ecb53bd3babf5e012a5"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get all projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{productionUrl}}projects/all?limit=10&offset=1",
+          "host": ["{{productionUrl}}projects"],
+          "path": ["all"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            },
+            {
+              "key": "offset",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create project",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTYwMmIyZmIwNDI0NzlkYmYzZTNmMCIsIm5hbWUiOiJQZWRybyIsImlhdCI6MTY2MjYzODM2MX0.fSlj6az2YoosEuuUTGVRBUzfiKXoPj197Sgx4-xTjG8",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "logo",
+              "type": "file",
+              "src": "/Users/xifre/Downloads/favicon.ico"
+            },
+            {
+              "key": "name",
+              "value": "asdfasdfa",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "asdfasdfas",
+              "type": "text"
+            },
+            {
+              "key": "author",
+              "value": "asdfasdfsd",
+              "type": "text"
+            },
+            {
+              "key": "repository",
+              "value": "asdfasdfasdfasdf",
+              "type": "text"
+            },
+            {
+              "key": "technologies",
+              "value": "asdf",
+              "type": "text"
+            },
+            {
+              "key": "technologies",
+              "value": "fdasfads",
+              "type": "text"
+            },
+            {
+              "key": "logo",
+              "value": "123456812345678",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{productionUrl}}projects/new",
+          "host": ["{{productionUrl}}projects"],
+          "path": ["new"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update project",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTYwMmIyZmIwNDI0NzlkYmYzZTNmMCIsIm5hbWUiOiJQZWRybyIsImlhdCI6MTY2MjQ1OTgzOX0.SoP7AoCCNx0HXSFKrxLg2yaNxX-KpM1suPQ0km9R5yM",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\": \"631602cafb042479dbf3e3f6\",\n  \"name\": \"Pedro app\",\n  \"description\": \"Pedro is Pedro\",\n  \"technologies\": [\n    \"Pedro\",\n    \"Pedro\"\n  ],\n  \"repository\": \"asdfasdf.com\",\n  \"author\": \"Pedro\",\n  \"authorId\": \"631602b2fb042479dbf3e3f0\",\n  \"logo\": \"uploads\\\\ffb7691111bf158d57d1cf47b962e8f6\",\n  \"creationDate\": \"1662386890856\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{productionUrl}}projects/update",
+          "host": ["{{productionUrl}}projects"],
+          "path": ["update"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete project",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTYwMmIyZmIwNDI0NzlkYmYzZTNmMCIsIm5hbWUiOiJQZWRybyIsImlhdCI6MTY2MjYzODM2MX0.fSlj6az2YoosEuuUTGVRBUzfiKXoPj197Sgx4-xTjG8",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{productionUrl}}projects/delete/6319ae4a9905cc510dc3ee77",
+          "host": ["{{productionUrl}}projects"],
+          "path": ["delete", "6319ae4a9905cc510dc3ee77"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "localhost",
+      "value": "http://localhost:4000/",
+      "type": "string"
+    },
+    {
+      "key": "productionUrl",
+      "value": "https://xfont-final-project-202207.herokuapp.com/"
+    }
+  ]
+}

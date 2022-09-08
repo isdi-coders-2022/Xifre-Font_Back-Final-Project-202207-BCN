@@ -51,6 +51,4 @@ projectsRouter.put(
   updateProject
 );
 
-projectsRouter.put(endpoints.updateProject, updateProject);
-
 export default projectsRouter;
