@@ -8,15 +8,15 @@ interface QueryValue {
 }
 
 const setValue = (query: string, defaultValue: number) =>
-  Object.is(+query, NaN) ? defaultValue : +query;
+  +query ? +query : defaultValue;
 
-const checkQueries = (...reqQuery: Array<QueryValue>) =>
+const checkQueries = (...reqQuery: QueryValue[]) =>
   reqQuery
     .filter((query) => queries[query.key] !== undefined)
     .map((query) =>
       queries[query.key].type === "number"
         ? setValue(query.value, queries[query.key].default as number)
-        : query.value
+        : query.value?.toString()
     );
 
 export default checkQueries;
