@@ -9,6 +9,7 @@ const mockProtoProject: ProtoProject = {
   repository: mockProject.repository,
   technologies: mockProject.technologies,
   logo: mockProject.logo,
+  logoBackup: mockProject.logoBackup,
 };
 
 export default mockProtoProject;
