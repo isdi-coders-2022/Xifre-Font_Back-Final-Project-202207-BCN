@@ -9,6 +9,7 @@ const mockProject: IProject = {
   author: "John Doe",
   authorId: "6305fe53bvf81v5baop3e52d",
   logo: "Link to the logo",
+  logoBackup: "Link to the logo",
   creationDate: new Date("2022-09-02T08:35:07.126Z"),
 };
 

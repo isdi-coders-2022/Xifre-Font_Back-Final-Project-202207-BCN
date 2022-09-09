@@ -1,6 +1,7 @@
 import express from "express";
 import { validate } from "express-validation";
 import multer from "multer";
+import path from "path";
 import { endpoints } from "../../../configs/routes";
 import {
   createProject,
@@ -11,6 +12,7 @@ import {
   updateProject,
 } from "../../../controllers/projectControllers/projectControllers";
 import { authentication } from "../../../middlewares/authentication/authentication";
+import supabaseUpload from "../../../middlewares/supabaseUpload/supabaseUpload";
 import getStringData from "../../../middlewares/getStringData/getStringData";
 import validateDeleteRequest from "../../../middlewares/validateDeleteRequest/validateDeleteRequest";
 import projectSchema from "../../../schemas/projectSchema";
@@ -18,7 +20,7 @@ import projectSchema from "../../../schemas/projectSchema";
 const projectsRouter = express.Router();
 
 const upload = multer({
-  dest: "public/uploads",
+  dest: path.join("public", "uploads"),
   limits: { fileSize: 3000000 },
 });
 
@@ -31,6 +33,7 @@ projectsRouter.post(
   authentication,
   upload.single("logo"),
   getStringData,
+  supabaseUpload,
   validate(projectSchema, {}, { abortEarly: false }),
   createProject
 );

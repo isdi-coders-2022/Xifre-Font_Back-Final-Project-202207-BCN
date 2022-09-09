@@ -8,6 +8,7 @@ interface IProject {
   authorId: string;
   description: string;
   logo: string;
+  logoBackup: string;
 }
 
 export default IProject;

@@ -7,6 +7,7 @@ const projectSchema = {
     authorId: Joi.string(),
     description: Joi.string().min(10).max(500).required(),
     logo: Joi.string().min(10).max(200).required(),
+    logoBackup: Joi.string(),
     repository: Joi.string().min(10).max(200).required(),
     technologies: Joi.array().min(1).max(3).required(),
   }),
