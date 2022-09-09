@@ -11,6 +11,21 @@ import mockProtoProject from "../../../test-utils/mocks/mockProtoProject";
 import mockUser from "../../../test-utils/mocks/mockUser";
 import "../../../testsSetup";
 
+jest.mock("@supabase/supabase-js", () => ({
+  createClient: () => ({
+    storage: {
+      from: () => ({
+        upload: jest.fn().mockReturnValue({
+          error: false,
+        }),
+        getPublicUrl: () => ({
+          publicURL: "Image url",
+        }),
+      }),
+    },
+  }),
+}));
+
 describe(`Given a /projects${endpoints.allProjects} route`, () => {
   describe("When requested with GET method", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {

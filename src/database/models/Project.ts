@@ -40,6 +40,11 @@ export const projectSchema = new Schema<IProject>({
     type: String,
     required: true,
   },
+
+  logoBackup: {
+    type: String,
+    required: true,
+  },
 });
 
 export const Project = model("Project", projectSchema, "projects");
