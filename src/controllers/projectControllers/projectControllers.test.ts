@@ -15,6 +15,21 @@ import {
   updateProject,
 } from "./projectControllers";
 
+jest.mock("@supabase/supabase-js", () => ({
+  createClient: () => ({
+    storage: {
+      from: () => ({
+        upload: jest.fn().mockReturnValue({
+          error: false,
+        }),
+        getPublicUrl: () => ({
+          publicURL: "Image url",
+        }),
+      }),
+    },
+  }),
+}));
+
 describe("Given a getAllProjects function", () => {
   const req = {
     query: {},

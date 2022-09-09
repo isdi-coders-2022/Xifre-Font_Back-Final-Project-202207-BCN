@@ -7,8 +7,9 @@ import CreateError from "../../utils/CreateError/CreateError";
 import codes from "../../configs/codes";
 
 const supabase = createClient(
-  environment.supabase.url,
-  environment.supabase.key
+  environment.supabase.url ?? "https://jmgqlfqskmlmzzxxcjhv.supabase.co",
+  environment.supabase.key ??
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptZ3FsZnF1a21sbXp6eHhjamh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjI3MjAxMzgsImV4cCI6MTk3ODI5NjEzOH0.Jnt1Wd2Bh3BefXrq5_pMSCAdLVBUl21cyIB57x_qJyA"
 );
 
 const supabaseUpload = async (

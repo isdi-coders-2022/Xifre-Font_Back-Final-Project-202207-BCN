@@ -1,19 +1,43 @@
 import { NextFunction, Request, Response } from "express";
+import fs from "fs/promises";
+import path from "path";
+import codes from "../../configs/codes";
+import CreateError from "../../utils/CreateError/CreateError";
 
 const getStringData = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const newProject = req.body.project;
+  const {
+    body: { project },
+    file,
+  } = req;
+  try {
+    const curatedProject = await JSON.parse(project);
 
-  const curatedProject = await JSON.parse(newProject);
+    const newLogoName = file ? `${Date.now()}${file.originalname}` : "";
 
-  curatedProject.logo = `uploads\\${req.file.filename}`;
+    if (file) {
+      await fs.rename(
+        path.join("public", "uploads", file.filename),
+        path.join("public", "uploads", newLogoName)
+      );
 
-  req.body = curatedProject;
+      curatedProject.logo = newLogoName;
+    }
 
-  next();
+    req.body = curatedProject;
+
+    next();
+  } catch (error) {
+    const newError = new CreateError(
+      codes.badRequest,
+      "Invalid data",
+      "Something failed while parsing the received data"
+    );
+    next(newError);
+  }
 };
 
 export default getStringData;
