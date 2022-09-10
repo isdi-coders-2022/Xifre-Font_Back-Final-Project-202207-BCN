@@ -15,6 +15,7 @@ import getStringData from "../../../middlewares/getStringData/getStringData";
 import validateDeleteRequest from "../../../middlewares/validateDeleteRequest/validateDeleteRequest";
 import projectSchema from "../../../schemas/projectSchema";
 import { upload } from "../../../utils/multer/multer";
+import compressImage from "../../../middlewares/compressImage/compressImage";
 
 const projectsRouter = express.Router();
 
@@ -27,6 +28,7 @@ projectsRouter.post(
   authentication,
   upload.single("logo"),
   getStringData,
+  compressImage,
   supabaseUpload,
   validate(projectSchema, {}, { abortEarly: false }),
   createProject
@@ -44,6 +46,7 @@ projectsRouter.put(
   authentication,
   upload.single("logo_update"),
   getStringData,
+  compressImage,
   supabaseUpload,
   validate(projectSchema, {}, { abortEarly: false }),
   updateProject

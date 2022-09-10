@@ -29,10 +29,14 @@ const supabaseUpload = async (
 
   try {
     const fileData = await readFile(resolvedPath);
+    const compressedFileData = await readFile(
+      path.join("public", "uploads", `r_${logo}`)
+    );
 
     const storage = supabase.storage.from(environment.supabase.bucket);
 
     const uploadResult = await storage.upload(logo, fileData);
+    await storage.upload(`r_${logo}`, compressedFileData);
 
     if (uploadResult.error) {
       next(uploadResult.error);

@@ -23,10 +23,12 @@ jest.mock("@supabase/supabase-js", () => ({
 
 beforeAll(async () => {
   await fs.writeFile("public/uploads/logo-name.png", "content");
+  await fs.writeFile("public/uploads/r_logo-name.png", "content");
 });
 
 afterAll(async () => {
   await fs.unlink("public/uploads/logo-name.png");
+  await fs.unlink("public/uploads/r_logo-name.png");
 });
 
 beforeEach(async () => {
