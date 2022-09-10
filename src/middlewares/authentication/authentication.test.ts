@@ -30,7 +30,7 @@ describe("Given a authentication function", () => {
     json: jest.fn().mockReturnThis(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with req, res and next as arguments", () => {
     test("Then it should call the next function", () => {
@@ -44,7 +44,7 @@ describe("Given a authentication function", () => {
 
       expect(next).toHaveBeenCalled();
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled).toBeUndefined();
     });
 
@@ -67,7 +67,7 @@ describe("Given a authentication function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
@@ -86,7 +86,7 @@ describe("Given a authentication function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
@@ -133,7 +133,7 @@ describe("Given a authentication function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });

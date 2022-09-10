@@ -9,7 +9,7 @@ import validateId from "./validateId";
 describe("Given a validateId function", () => {
   const res = {} as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with a customRequest, a response and a next function as arguments", () => {
     test("Then it should call next if the user id matches the project author id", async () => {
@@ -20,11 +20,15 @@ describe("Given a validateId function", () => {
         body: mockProject,
       } as Partial<Request>;
 
-      await validateId(customReq as CustomRequest, res as Response, next);
+      await validateId(
+        customReq as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalled();
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled).toBeUndefined();
     });

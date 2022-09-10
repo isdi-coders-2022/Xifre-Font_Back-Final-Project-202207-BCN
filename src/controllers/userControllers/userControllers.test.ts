@@ -31,14 +31,14 @@ describe("Given a signUp function (controller)", () => {
     json: jest.fn(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   User.create = jest.fn().mockReturnValue(mockUser);
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test(`It should call status with a code of '${codes.created}'`, async () => {
       User.find = jest.fn().mockReturnValue([]);
-      await signUp(req as Request, res as Response, next);
+      await signUp(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(codes.created);
     });
@@ -49,7 +49,7 @@ describe("Given a signUp function (controller)", () => {
         newUser: mockUser,
       };
 
-      await signUp(req as Request, res as Response, next);
+      await signUp(req as Request, res as Response, next as NextFunction);
 
       expect(res.json).toHaveBeenCalledWith(expectedBody);
     });
@@ -66,11 +66,11 @@ describe("Given a signUp function (controller)", () => {
         errorMessage
       );
 
-      await signUp(req as Request, res as Response, next);
+      await signUp(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
 
@@ -83,11 +83,11 @@ describe("Given a signUp function (controller)", () => {
         "User already exists"
       );
 
-      await signUp(req as Request, res as Response, next);
+      await signUp(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
       expect(nextCalled.code).toBe(codes.conflict);
@@ -114,7 +114,7 @@ describe("Given a log in function (controller)", () => {
     json: jest.fn(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   User.find = jest.fn().mockReturnValue([mockUser]);
 
@@ -122,7 +122,7 @@ describe("Given a log in function (controller)", () => {
     test(`It should call status with a code of ${codes.ok}`, async () => {
       mockHashCompareValue = jest.fn().mockReturnValue(true);
 
-      await logIn(req as Request, res as Response, next);
+      await logIn(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
@@ -130,7 +130,7 @@ describe("Given a log in function (controller)", () => {
     test("It should prepare a token with the logged in user", async () => {
       mockHashCompareValue = jest.fn().mockReturnValue(true);
 
-      await logIn(req as Request, res as Response, next);
+      await logIn(req as Request, res as Response, next as NextFunction);
 
       expect(res.json).toHaveBeenCalledWith(prepareToken(mockUser));
     });
@@ -138,7 +138,7 @@ describe("Given a log in function (controller)", () => {
     test("If no users are found, it should call next with an error", async () => {
       User.find = jest.fn().mockReturnValue([]);
 
-      await logIn(req as Request, res as Response, next);
+      await logIn(req as Request, res as Response, next as NextFunction);
 
       const expectedError = new CreateError(
         codes.notFound,
@@ -148,7 +148,7 @@ describe("Given a log in function (controller)", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -157,7 +157,7 @@ describe("Given a log in function (controller)", () => {
       User.find = jest.fn().mockReturnValue([mockUser]);
       mockHashCompareValue = false;
 
-      await logIn(req as Request, res as Response, next);
+      await logIn(req as Request, res as Response, next as NextFunction);
 
       const expectedError = new CreateError(
         codes.badRequest,
@@ -167,7 +167,7 @@ describe("Given a log in function (controller)", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -184,12 +184,12 @@ describe("Given a getUserData controller", () => {
     json: jest.fn(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
   User.findById = jest.fn().mockReturnValue(mockUser);
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test(`It should call status with a code of ${codes.ok}`, async () => {
-      await getUserData(req as Request, res as Response, next);
+      await getUserData(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
@@ -199,7 +199,7 @@ describe("Given a getUserData controller", () => {
         user: mockUser,
       };
 
-      await getUserData(req as Request, res as Response, next);
+      await getUserData(req as Request, res as Response, next as NextFunction);
 
       expect(res.json).toHaveBeenCalledWith(expectedBody);
     });
@@ -214,11 +214,11 @@ describe("Given a getUserData controller", () => {
         `Requested user does not exist`
       );
 
-      await getUserData(req as Request, res as Response, next);
+      await getUserData(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });

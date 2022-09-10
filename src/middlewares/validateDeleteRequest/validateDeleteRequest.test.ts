@@ -18,14 +18,18 @@ describe("Given a validateDeleteRequest function", () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test("Then it should call next", async () => {
       Project.findById = jest.fn().mockReturnValue(mockProject);
       User.findById = jest.fn().mockReturnValue(mockUser);
 
-      await validateDeleteRequest(req as CustomRequest, res as Response, next);
+      await validateDeleteRequest(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalled();
     });
@@ -40,7 +44,11 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: mockUser.id,
       };
 
-      await validateDeleteRequest(req as CustomRequest, res as Response, next);
+      await validateDeleteRequest(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -57,7 +65,11 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as CustomRequest, res as Response, next);
+      await validateDeleteRequest(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -74,7 +86,11 @@ describe("Given a validateDeleteRequest function", () => {
         authorId: undefined as undefined,
       };
 
-      await validateDeleteRequest(req as CustomRequest, res as Response, next);
+      await validateDeleteRequest(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(req.body).toStrictEqual(expectedBody);
     });
@@ -99,11 +115,15 @@ describe("Given a validateDeleteRequest function", () => {
         "Project not found: "
       );
 
-      await validateDeleteRequest(req as CustomRequest, res as Response, next);
+      await validateDeleteRequest(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -134,7 +154,7 @@ describe("Given a validateDeleteRequest function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
