@@ -16,17 +16,18 @@ const getStringData = async (
   try {
     const curatedProject = await JSON.parse(project);
 
-    const newLogoName = file ? `${Date.now()}${file.originalname}` : "";
+    const newLogoName = file
+      ? `${Date.now()}${file.originalname}`
+      : "default_logo";
 
     if (file) {
       await fs.rename(
         path.join("public", "uploads", file.filename),
         path.join("public", "uploads", newLogoName)
       );
-
-      curatedProject.logo = newLogoName;
     }
 
+    curatedProject.logo = newLogoName;
     req.body = curatedProject;
 
     next();
