@@ -365,15 +365,14 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, authorId: author.id })
         )
-        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
-          filename: "logo.jpg",
+        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+          filename: "new-logo.jpg",
         })
         .expect(codes.ok);
     });
 
     test("Then it should update the project and respond with it", async () => {
       let project: IProject;
-      let updated: IProject;
 
       await request(app)
         .post(`/projects/${endpoints.createProject}`)
@@ -398,15 +397,13 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, authorId: author.id })
         )
-        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
-          filename: "logo.jpg",
+        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+          filename: "new-logo.jpg",
         })
-        .then(({ body: { updatedProject } }) => {
-          updated = updatedProject;
+        .expect(codes.ok)
+        .then((data) => {
+          expect(data.body.updatedProject).toHaveProperty("authorId");
         });
-
-      expect(updated).toHaveProperty("name");
-      expect(updated).toHaveProperty("creationDate");
     });
   });
 
@@ -419,28 +416,64 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
         "project",
         JSON.stringify({ ...mockProtoProject, authorId: author.id })
       )
-      .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+      .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
         filename: "logo.jpg",
       })
       .expect(codes.badRequest);
   });
-});
 
-describe("When requested with PUT method but the client is not authenticated", () => {
-  test(`Then it should respond with a status of ${codes.internalServerError}`, async () => {
-    await request(app)
-      .post(`/projects/${endpoints.createProject}`)
-      .type("multipart/form-data")
-      .field(
-        "project",
-        JSON.stringify({
-          ...mockProtoProject,
-          authorId: "",
+  describe("When requested with PUT method and there is no image to upload", () => {
+    let project: IProject;
+
+    test("Then it should not change the image name and update the project", async () => {
+      await request(app)
+        .post(`/projects/${endpoints.createProject}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo", Buffer.from("fakeImage", "utf-8"), {
+          filename: "logo.jpg",
         })
-      )
-      .attach("logo", Buffer.from("fakeImage", "utf-8"), {
-        filename: "logo.jpg",
-      })
-      .expect(codes.internalServerError);
+        .then(({ body: { projectCreated } }) => {
+          project = projectCreated;
+        });
+
+      await request(app)
+        .put(`/projects/update/${project.id}`)
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, logo: "", authorId: author.id })
+        )
+        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+          filename: undefined,
+        })
+        .then((data) => {
+          expect(data.body.updatedProject.logo).toBe(project.logo);
+        });
+    });
+  });
+
+  describe("When requested with PUT method but the client is not authenticated", () => {
+    test(`Then it should respond with a status of ${codes.internalServerError}`, async () => {
+      const project = await Project.create(mockProtoProject);
+
+      await request(app)
+        .put(`/projects/update/${project.id}`)
+        .set("Authorization", "Beare bad token")
+        .type("multipart/form-data")
+        .field(
+          "project",
+          JSON.stringify({ ...mockProtoProject, authorId: author.id })
+        )
+        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+          filename: "new-logo",
+        })
+        .expect(codes.internalServerError);
+    });
   });
 });
