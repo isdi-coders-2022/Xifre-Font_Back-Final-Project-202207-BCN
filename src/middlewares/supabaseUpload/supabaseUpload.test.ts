@@ -42,7 +42,7 @@ describe("Given a supabaseUpload function", () => {
     },
   } as Partial<Request>;
   const res = {} as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test("Then it should call next", async () => {
@@ -107,7 +107,7 @@ describe("Given a supabaseUpload function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });

@@ -83,7 +83,7 @@ describe("Given a compressImage function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });

@@ -23,7 +23,7 @@ describe("Given a getAllProjects function", () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   Project.find = jest.fn().mockReturnValue({
     skip: jest.fn().mockReturnValue({
@@ -33,7 +33,11 @@ describe("Given a getAllProjects function", () => {
 
   describe("When called with a request, a response and a next function", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
-      await getAllProjects(req as Request, res as Response, next);
+      await getAllProjects(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
@@ -46,7 +50,11 @@ describe("Given a getAllProjects function", () => {
           list: [mockProject],
         },
       };
-      await getAllProjects(req as Request, res as Response, next);
+      await getAllProjects(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
@@ -66,11 +74,15 @@ describe("Given a getAllProjects function", () => {
         "Error while getting projects: "
       );
 
-      await getAllProjects(req as Request, res as Response, next);
+      await getAllProjects(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -88,7 +100,11 @@ describe("Given a getAllProjects function", () => {
         projects: "No projects found",
       };
 
-      await getAllProjects(req as Request, res as Response, next);
+      await getAllProjects(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.notFound);
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
@@ -107,7 +123,11 @@ describe("Given a getAllProjects function", () => {
         }),
       });
 
-      await getAllProjects(reqQuery as Request, res as Response, next);
+      await getAllProjects(
+        reqQuery as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(Project.find).toHaveBeenCalledWith({ technologies: "react" });
     });
@@ -125,7 +145,7 @@ describe("Given a getById function", () => {
     json: jest.fn(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with a request, a response and a next function", () => {
     test(`Then it should respond with a status of '${codes.ok}' and the project found`, async () => {
@@ -135,7 +155,7 @@ describe("Given a getById function", () => {
         project: mockProject,
       };
 
-      await getById(req as Request, res as Response, next);
+      await getById(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(codes.ok);
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
@@ -148,7 +168,7 @@ describe("Given a getById function", () => {
         projects: "No projects found",
       };
 
-      await getById(req as Request, res as Response, next);
+      await getById(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(codes.notFound);
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
@@ -165,11 +185,11 @@ describe("Given a getById function", () => {
         "Error while finding the project requested"
       );
 
-      await getById(req as Request, res as Response, next);
+      await getById(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -184,7 +204,7 @@ describe("Given a createProject function", () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   Project.create = jest.fn().mockReturnValue(mockProject);
   Project.findByIdAndDelete = jest.fn();
@@ -203,7 +223,11 @@ describe("Given a createProject function", () => {
     Project.findByIdAndDelete = jest.fn();
 
     test(`Then it should respond with a status of '${codes.created}'`, async () => {
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.created);
     });
@@ -213,13 +237,21 @@ describe("Given a createProject function", () => {
         projectCreated: mockProject,
       };
 
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
 
     test("Then it should modify the author document to add a new project", async () => {
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(User.findByIdAndUpdate).toHaveBeenCalledWith(mockUser.id, {
         projects: [...mockUser.projects, mockProject.id],
@@ -236,11 +268,15 @@ describe("Given a createProject function", () => {
         "Unable to create the project",
         "Unable to create the project: "
       );
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -253,7 +289,11 @@ describe("Given a createProject function", () => {
       Project.create = jest.fn().mockReturnValue(mockProject);
       User.findById = jest.fn().mockRejectedValue(new Error());
 
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(Project.findByIdAndDelete).toHaveBeenCalledWith(mockProject.id);
     });
@@ -264,7 +304,11 @@ describe("Given a createProject function", () => {
       Project.create = jest.fn().mockReturnValue(mockProject);
       User.findById = jest.fn().mockRejectedValue(new Error());
 
-      await createProject(req as Request, res as Response, next);
+      await createProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       const expectedError = new CreateError(
         codes.notFound,
@@ -274,7 +318,7 @@ describe("Given a createProject function", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -289,7 +333,7 @@ describe("Given a getProjectsByAuthor function", () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test(`Then it should call status with a status of ${codes.ok}`, async () => {
@@ -299,7 +343,11 @@ describe("Given a getProjectsByAuthor function", () => {
         .fn()
         .mockReturnValue({ id: mockUser.id, projects: mockUser.projects });
 
-      await getProjectsByAuthor(req as Request, res as Response, next);
+      await getProjectsByAuthor(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.ok);
     });
@@ -319,7 +367,11 @@ describe("Given a getProjectsByAuthor function", () => {
         },
       };
 
-      await getProjectsByAuthor(req as Request, res as Response, next);
+      await getProjectsByAuthor(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
@@ -335,11 +387,15 @@ describe("Given a getProjectsByAuthor function", () => {
         "Requesting user doesn't exist"
       );
 
-      await getProjectsByAuthor(req as Request, res as Response, next);
+      await getProjectsByAuthor(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -361,7 +417,11 @@ describe("Given a getProjectsByAuthor function", () => {
         },
       };
 
-      await getProjectsByAuthor(req as Request, res as Response, next);
+      await getProjectsByAuthor(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
       expect(res.status).toHaveBeenCalledWith(codes.notFound);
@@ -384,11 +444,15 @@ describe("Given a getProjectsByAuthor function", () => {
         `Could't get any project: `
       );
 
-      await getProjectsByAuthor(req as Request, res as Response, next);
+      await getProjectsByAuthor(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
@@ -408,7 +472,7 @@ describe("Given a projectControllers function", () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   Project.findByIdAndDelete = jest.fn();
 
@@ -416,13 +480,21 @@ describe("Given a projectControllers function", () => {
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test(`Then it should call status with a status of '${codes.deletedWithResponse}'`, async () => {
-      await deleteProject(req as Request, res as Response, next);
+      await deleteProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.deletedWithResponse);
     });
 
     test("Then it should respond with a success message", async () => {
-      await deleteProject(req as Request, res as Response, next);
+      await deleteProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       const expectedResponse = {
         projectDeleted: {
@@ -435,7 +507,11 @@ describe("Given a projectControllers function", () => {
     });
 
     test("Then it should delete the project from the author projects", async () => {
-      await deleteProject(req as Request, res as Response, next);
+      await deleteProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
         mockProject.authorId,
@@ -458,7 +534,11 @@ describe("Given a projectControllers function", () => {
         },
       } as Partial<Request>;
 
-      await deleteProject(reqWithoutAuthor as Request, res as Response, next);
+      await deleteProject(
+        reqWithoutAuthor as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
     });
@@ -474,7 +554,11 @@ describe("Given a projectControllers function", () => {
         "Error while deleting the project: "
       );
 
-      await deleteProject(req as Request, res as Response, next);
+      await deleteProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(next).toHaveBeenCalledWith(expectedError);
     });
@@ -492,7 +576,7 @@ describe("Given a updateProject controller", () => {
     json: jest.fn(),
   } as Partial<Response>;
 
-  const next = jest.fn() as NextFunction;
+  const next = jest.fn();
 
   Project.replaceOne = jest.fn();
 
@@ -500,7 +584,11 @@ describe("Given a updateProject controller", () => {
     test(`Then it should respond with a status code of ${codes.updatedWithResponse}`, async () => {
       Project.findById = jest.fn().mockReturnValue(mockProject);
 
-      await updateProject(req as Request, res as Response, next);
+      await updateProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.status).toHaveBeenCalledWith(codes.updatedWithResponse);
     });
@@ -511,7 +599,11 @@ describe("Given a updateProject controller", () => {
       const expectedResponse = {
         updatedProject: { ...mockProject, name: "Updated name" },
       };
-      await updateProject(req as Request, res as Response, next);
+      await updateProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       expect(res.json).toHaveBeenCalledWith(expectedResponse);
     });
@@ -521,7 +613,11 @@ describe("Given a updateProject controller", () => {
     test("Then it should call next with an error", async () => {
       Project.findById = jest.fn().mockRejectedValue(new Error());
 
-      await updateProject(req as Request, res as Response, next);
+      await updateProject(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
 
       const expectedError = new CreateError(
         codes.badRequest,
@@ -531,7 +627,7 @@ describe("Given a updateProject controller", () => {
 
       expect(next).toHaveBeenCalledWith(expectedError);
 
-      const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
+      const nextCalled = next.mock.calls[0][0];
 
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
