@@ -26,6 +26,25 @@ jest.mock("@supabase/supabase-js", () => ({
   }),
 }));
 
+jest.mock("fs/promises", () => ({
+  ...jest.requireActual("fs/promises"),
+  readFile: jest.fn(),
+}));
+
+const mockToFile = jest.fn();
+
+const mockJpeg = jest.fn().mockReturnValue({
+  toFile: mockToFile,
+});
+
+const mockResize = jest.fn().mockReturnValue({
+  jpeg: mockJpeg,
+});
+
+jest.mock("sharp", () => () => ({
+  resize: mockResize,
+}));
+
 describe(`Given a /projects${endpoints.allProjects} route`, () => {
   describe("When requested with GET method", () => {
     test(`Then it should respond with a status of '${codes.ok}'`, async () => {
