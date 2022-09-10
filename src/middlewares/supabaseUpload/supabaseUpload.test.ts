@@ -21,15 +21,19 @@ jest.mock("@supabase/supabase-js", () => ({
   }),
 }));
 
+beforeAll(async () => {
+  await fs.writeFile("public/uploads/logo-name.png", "content");
+});
+
+afterAll(async () => {
+  await fs.unlink("public/uploads/logo-name.png");
+});
+
+beforeEach(async () => {
+  await jest.clearAllMocks();
+});
+
 describe("Given a supabaseUpload function", () => {
-  beforeAll(async () => {
-    await fs.writeFile("public/uploads/logo-name.png", "content");
-  });
-
-  afterAll(async () => {
-    await fs.unlink("public/uploads/logo-name.png");
-  });
-
   const req = {
     body: {
       logo: "logo-name.png",
@@ -103,6 +107,42 @@ describe("Given a supabaseUpload function", () => {
 
       const nextCalled = (next as jest.Mock<any, any>).mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When called with a request that doesn't have a logo", () => {
+    test("Then it should call next and not upload anything if the logo is empty", async () => {
+      const reqWithoutLogo = {
+        body: {
+          logo: "",
+        },
+      } as Partial<Request>;
+
+      await supabaseUpload(
+        reqWithoutLogo as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+      expect(mockUpload).not.toHaveBeenCalled();
+    });
+
+    test("Then it should call next and not upload anything if the logo is 'default_logo'", async () => {
+      const reqWithoutLogo = {
+        body: {
+          logo: "default_logo",
+        },
+      } as Partial<Request>;
+
+      await supabaseUpload(
+        reqWithoutLogo as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+      expect(mockUpload).not.toHaveBeenCalled();
     });
   });
 });

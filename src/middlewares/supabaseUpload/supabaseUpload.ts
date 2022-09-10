@@ -19,10 +19,16 @@ const supabaseUpload = async (
 ) => {
   const { logo } = req.body;
 
+  if (!logo || logo === "default_logo") {
+    next();
+    return;
+  }
+
   const imagePath = path.join("public", "uploads", logo);
+  const resolvedPath = path.resolve(imagePath);
 
   try {
-    const fileData = await readFile(imagePath);
+    const fileData = await readFile(resolvedPath);
 
     const storage = supabase.storage.from(environment.supabase.bucket);
 

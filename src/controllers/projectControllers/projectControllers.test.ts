@@ -525,7 +525,7 @@ describe("Given a updateProject controller", () => {
 
       const expectedError = new CreateError(
         codes.badRequest,
-        "Couldn't updated any project",
+        "Couldn't update any project",
         "Error while updating the project: "
       );
 

@@ -221,8 +221,12 @@ export const updateProject = async (
   try {
     const toUpdate = await Project.findById(projectId);
 
+    const setLogo =
+      project.logo !== "default_logo" ? project.logo : toUpdate.logo;
+
     const updatedProject = {
       ...project,
+      logo: setLogo,
       creationDate: toUpdate.creationDate,
       author: toUpdate.author,
       authorId: toUpdate.authorId,
@@ -234,7 +238,7 @@ export const updateProject = async (
   } catch (error) {
     const newError = new CreateError(
       codes.badRequest,
-      "Couldn't updated any project",
+      "Couldn't update any project",
       `Error while updating the project: ${error.message}`
     );
     next(newError);
