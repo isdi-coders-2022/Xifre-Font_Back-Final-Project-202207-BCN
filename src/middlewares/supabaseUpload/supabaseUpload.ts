@@ -24,7 +24,7 @@ const supabaseUpload = async (
     return;
   }
 
-  const imagePath = path.join("public", "uploads", logo);
+  const imagePath = path.join("public", "uploads", `r_${logo}`);
   const resolvedPath = path.resolve(imagePath);
 
   try {
