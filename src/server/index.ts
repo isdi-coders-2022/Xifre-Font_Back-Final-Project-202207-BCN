@@ -6,6 +6,7 @@ import generalError from "../middlewares/generalError/generalError";
 import { routers } from "../configs/routes";
 import projectsRouter from "./routers/projectsRouter/projectsRouter";
 import environment from "../configs/environment";
+import notFoundError from "../middlewares/notFoundError/notFoundError";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static("public"));
 app.use(routers.users, usersRouter);
 app.use(routers.projects, projectsRouter);
 
+app.use(notFoundError);
 app.use(generalError);
 
 export default app;
