@@ -441,7 +441,7 @@ describe("Given a getProjectsByAuthor function", () => {
       const expectedError = new CreateError(
         codes.notFound,
         "Unable to get the requested projects",
-        `Could't get any project: `
+        `Couldn't get any project: `
       );
 
       await getProjectsByAuthor(

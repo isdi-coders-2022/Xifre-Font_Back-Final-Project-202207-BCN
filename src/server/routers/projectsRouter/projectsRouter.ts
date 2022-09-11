@@ -16,6 +16,7 @@ import validateDeleteRequest from "../../../middlewares/validateDeleteRequest/va
 import projectSchema from "../../../schemas/projectSchema";
 import { upload } from "../../../utils/multer/multer";
 import compressImage from "../../../middlewares/compressImage/compressImage";
+import validateId from "../../../middlewares/validateId/validateId";
 
 const projectsRouter = express.Router();
 
@@ -46,6 +47,7 @@ projectsRouter.put(
   authentication,
   upload.single("logo_update"),
   getStringData,
+  validateId,
   compressImage,
   supabaseUpload,
   validate(projectSchema, {}, { abortEarly: false }),
