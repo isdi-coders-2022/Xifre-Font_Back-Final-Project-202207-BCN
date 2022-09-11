@@ -88,4 +88,24 @@ describe("Given a compressImage function", () => {
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
+
+  describe("When called with a request that has no logo", () => {
+    test("Then it should not compress anything and call next", async () => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+
+      const reqNoLogo = {
+        body: {},
+      } as Partial<Request>;
+
+      await compressImage(
+        reqNoLogo as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(mockResize).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });
