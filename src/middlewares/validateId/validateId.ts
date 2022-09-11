@@ -14,7 +14,7 @@ const validateId = async (
   if (project.authorId !== req.payload.id) {
     const newError = new CreateError(
       codes.badRequest,
-      "Could't update the project",
+      "Couldn't update the project",
       "The client is not the author of the project"
     );
     next(newError);
