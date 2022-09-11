@@ -11,7 +11,7 @@ describe("Given a multerFilter function", () => {
 
     const file = {
       fieldname: "logo_update",
-      filename: "",
+      originalname: "",
     } as Express.Multer.File;
     const callback = jest.fn() as multer.FileFilterCallback;
 

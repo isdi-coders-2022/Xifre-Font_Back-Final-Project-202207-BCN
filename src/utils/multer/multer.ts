@@ -1,6 +1,8 @@
 import multer from "multer";
 import path from "path";
 
+const maxFileSize = 5 * 1024 * 1024;
+
 export const multerFilter = (
   req: Express.Request,
   file: Express.Multer.File,
@@ -16,6 +18,6 @@ export const multerFilter = (
 
 export const upload = multer({
   dest: path.join("public", "uploads"),
-  limits: { fileSize: 3000000 },
+  limits: { fileSize: maxFileSize },
   fileFilter: multerFilter,
 });
