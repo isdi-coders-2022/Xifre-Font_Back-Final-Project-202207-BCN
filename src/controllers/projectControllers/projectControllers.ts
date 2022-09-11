@@ -166,7 +166,7 @@ export const getProjectsByAuthor = async (
     const newError = new CreateError(
       codes.notFound,
       "Unable to get the requested projects",
-      `Could't get any project: ${error.message}`
+      `Couldn't get any project: ${error.message}`
     );
     next(newError);
   }
