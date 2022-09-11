@@ -222,7 +222,7 @@ export const updateProject = async (
     const toUpdate = await Project.findById(projectId);
 
     const setLogo =
-      project.logo !== "default_logo" ? project.logo : toUpdate.logo;
+      project.logo === "default_logo" ? toUpdate.logo : project.logo;
 
     const updatedProject = {
       ...project,
@@ -232,7 +232,7 @@ export const updateProject = async (
       authorId: toUpdate.authorId,
     };
 
-    await Project.replaceOne({ id: project.id }, updatedProject);
+    await Project.replaceOne({ _id: projectId }, updatedProject);
 
     res.status(codes.updatedWithResponse).json({ updatedProject });
   } catch (error) {

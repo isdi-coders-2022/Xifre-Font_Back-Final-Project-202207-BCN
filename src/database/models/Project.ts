@@ -39,14 +39,14 @@ export const projectSchema = new Schema<IProject>({
   logo: {
     type: String,
     required: true,
-    default: "1662748453987default_logo.png",
+    default: "default_logo.png",
   },
 
   logoBackup: {
     type: String,
     required: true,
     default:
-      "https://jmgqlfqukmlmzzxxcjhv.supabase.co/storage/v1/object/public/widescope/1662748814630default_logo.png",
+      "https://jmgqlfqukmlmzzxxcjhv.supabase.co/storage/v1/object/public/widescope/default_logo.png",
   },
 });
 
