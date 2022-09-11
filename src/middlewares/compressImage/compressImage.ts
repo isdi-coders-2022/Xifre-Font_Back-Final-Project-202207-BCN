@@ -11,12 +11,17 @@ const compressImage = async (
   next: NextFunction
 ) => {
   const { logo } = req.body as IProject;
+
+  if (!logo || logo === "default_logo") {
+    next();
+    return;
+  }
+
   try {
     await sharp(path.join("public", "uploads", `${logo}`))
       .resize(250, 250, { withoutEnlargement: true })
       .jpeg({ quality: 90 })
       .toFile(path.join("public", "uploads", `r_${logo}`));
-
     next();
   } catch (error) {
     const newError = new CreateError(
