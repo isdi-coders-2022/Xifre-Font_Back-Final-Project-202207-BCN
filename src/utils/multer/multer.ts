@@ -8,11 +8,10 @@ export const multerFilter = (
   file: Express.Multer.File,
   callback: multer.FileFilterCallback
 ): void => {
-  if (file.fieldname === "logo_update" && !file.filename) {
+  if (file.fieldname === "logo_update" && !file.originalname) {
     callback(null, false);
     return;
   }
-
   callback(null, true);
 };
 
