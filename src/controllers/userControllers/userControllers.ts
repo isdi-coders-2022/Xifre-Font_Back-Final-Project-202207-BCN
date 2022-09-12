@@ -107,11 +107,22 @@ export const getUserData = async (
   next: NextFunction
 ) => {
   const { userId } = req.params;
+  const { friends } = req.query;
+
+  const search = {} as { [key: string]: string | object };
 
   let dbUser: IUser;
 
   try {
     dbUser = await User.findById(userId);
+
+    if (friends === "all") {
+      // eslint-disable-next-line no-underscore-dangle
+      search._id = { $in: dbUser.contacts };
+      const userFriends = await User.find(search);
+
+      res.status(codes.ok).json({ userFriends });
+    }
 
     res.status(codes.ok).json({ user: dbUser });
   } catch (error) {

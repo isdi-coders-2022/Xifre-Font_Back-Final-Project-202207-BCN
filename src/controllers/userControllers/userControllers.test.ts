@@ -184,6 +184,7 @@ describe("Given a log in function (controller)", () => {
 describe("Given a getUserData controller", () => {
   const req = {
     params: { userId: "#" },
+    query: { friends: "" },
   } as Partial<Request>;
 
   const res = {
@@ -193,6 +194,7 @@ describe("Given a getUserData controller", () => {
 
   const next = jest.fn();
   User.findById = jest.fn().mockReturnValue(mockUser);
+  User.find = jest.fn().mockReturnValue([mockUser]);
 
   describe("When called with a request, a response and a next function as arguments", () => {
     test(`It should call status with a code of ${codes.ok}`, async () => {
@@ -227,6 +229,30 @@ describe("Given a getUserData controller", () => {
 
       const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When called requesting all the user friends", () => {
+    test(`Then it should respond with a status of '${codes.ok}' and with a list of the friends found`, async () => {
+      User.findById = jest.fn().mockReturnValue(mockUser);
+
+      const expectedBody = {
+        userFriends: [{ ...mockUser }],
+      };
+
+      const reqWithQuery = {
+        params: { userId: "#" },
+        query: { friends: "all" },
+      } as Partial<Request>;
+
+      await getUserData(
+        reqWithQuery as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
+      expect(res.json).toHaveBeenCalledWith(expectedBody);
     });
   });
 });
