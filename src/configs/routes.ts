@@ -7,6 +7,7 @@ export const endpoints = {
   logIn: "/log-in",
   signUp: "/sign-up",
   getUserData: "/:userId",
+  addFriend: "/:friendId",
 
   allProjects: "/all",
   projectById: "/:projectId",

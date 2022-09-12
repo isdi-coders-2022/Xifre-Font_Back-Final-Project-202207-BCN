@@ -7,6 +7,7 @@ import IUser from "../../database/types/IUser";
 import prepareToken from "../../utils/prepareToken/prepareToken";
 import codes from "../../configs/codes";
 import { ILoginData, IRegisterData } from "../types/userControllers";
+import { CustomRequest } from "../../middlewares/authentication/authentication";
 
 export const signUp = async (
   req: Request,
@@ -117,9 +118,44 @@ export const getUserData = async (
     const newError = new CreateError(
       codes.notFound,
       "Bad request",
-      `Requested user does not exist`
+      "Requested user does not exist"
     );
 
+    next(newError);
+  }
+};
+
+export const addFriend = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { friendId } = req.params;
+  const { id } = req.payload;
+
+  let client: IUser;
+  let friend: IUser;
+
+  try {
+    client = await User.findById(id);
+    friend = await User.findById(friendId);
+
+    if (client.contacts.includes(friend.id)) {
+      throw new Error("");
+    }
+
+    await User.findByIdAndUpdate(
+      { _id: id },
+      { contacts: [...client.contacts, friend.id] }
+    );
+
+    res.status(codes.ok).json({ friendAdded: friend.name });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "Bad request",
+      `Error while adding friend: ${error.message}`
+    );
     next(newError);
   }
 };
