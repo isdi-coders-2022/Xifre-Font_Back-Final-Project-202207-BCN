@@ -10,12 +10,12 @@ describe("Given a multerFilter function", () => {
     const req = {} as Express.Request;
 
     const file = {
-      fieldname: "logo_update",
+      fieldname: "logoUpdate",
       originalname: "",
     } as Express.Multer.File;
     const callback = jest.fn() as multer.FileFilterCallback;
 
-    describe("When the file fieldname is 'logo_update' and the file has no filename", () => {
+    describe("When the file fieldname is 'logoUpdate' and the file has no filename", () => {
       test("Then it should call the callback function with null and false as arguments", () => {
         multerFilter(req, file, callback);
 
