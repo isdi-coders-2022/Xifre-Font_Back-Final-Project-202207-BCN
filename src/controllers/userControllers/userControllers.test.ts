@@ -5,7 +5,13 @@ import { CustomRequest } from "../../middlewares/authentication/authentication";
 import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
 import prepareToken from "../../utils/prepareToken/prepareToken";
-import { addFriend, getUserData, logIn, signUp } from "./userControllers";
+import {
+  addFriend,
+  getAllUsers,
+  getUserData,
+  logIn,
+  signUp,
+} from "./userControllers";
 
 let mockHashCompareValue: boolean | jest.Mock<boolean> = true;
 
@@ -351,6 +357,71 @@ describe("Given a addFriend function (controller)", () => {
       expect(nextWithSameIdCalled.privateMessage).toBe(
         expectedError.privateMessage
       );
+    });
+  });
+});
+
+describe("Given a getAllUsers function (controller)", () => {
+  const req = {} as Partial<Request>;
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const next = jest.fn();
+
+  User.find = jest.fn().mockReturnValue([mockUser]);
+
+  describe("When called with a request, a response and a next function as arguments", () => {
+    test(`It should call status with a code of '${codes.ok}'`, async () => {
+      await getAllUsers(req as Request, res as Response, next as NextFunction);
+
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
+    });
+
+    test("It should respond with all the users received", async () => {
+      await getAllUsers(req as Request, res as Response, next as NextFunction);
+
+      expect(res.json).toHaveBeenCalledWith({ users: [mockUser] });
+    });
+  });
+
+  describe("When called but no users at found", () => {
+    test("Then it should call next with an error", async () => {
+      const expectedError = new CreateError(
+        codes.notFound,
+        "No users found",
+        "No users found"
+      );
+
+      User.find = jest.fn().mockReturnValue([]);
+
+      await getAllUsers(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = next.mock.calls[0][0];
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When called but there's an error while getting the users", () => {
+    test("Then it should call next with an error", async () => {
+      const expectedError = new CreateError(
+        codes.notFound,
+        "No users found",
+        "No users found"
+      );
+
+      User.find = jest.fn().mockRejectedValue(new Error());
+
+      await getAllUsers(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+
+      const nextCalled = next.mock.calls[0][0];
+      expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
     });
   });
 });

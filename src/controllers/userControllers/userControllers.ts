@@ -160,3 +160,26 @@ export const addFriend = async (
     next(newError);
   }
 };
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const users = await User.find({});
+
+    if (!users.length) {
+      throw new Error();
+    }
+
+    res.status(codes.ok).json({ users });
+  } catch (error) {
+    const newError = new CreateError(
+      codes.notFound,
+      "No users found",
+      "No users found"
+    );
+    next(newError);
+  }
+};
