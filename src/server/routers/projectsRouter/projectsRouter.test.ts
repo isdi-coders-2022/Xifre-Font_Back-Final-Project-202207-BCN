@@ -384,7 +384,7 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, authorId: author.id })
         )
-        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+        .attach("logoUpdate", Buffer.from("fakeImage", "utf-8"), {
           filename: "new-logo.jpg",
         })
         .expect(codes.ok);
@@ -416,7 +416,7 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, authorId: author.id })
         )
-        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+        .attach("logoUpdate", Buffer.from("fakeImage", "utf-8"), {
           filename: "new-logo.jpg",
         })
         .expect(codes.ok)
@@ -435,7 +435,7 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
         "project",
         JSON.stringify({ ...mockProtoProject, authorId: author.id })
       )
-      .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+      .attach("logoUpdate", Buffer.from("fakeImage", "utf-8"), {
         filename: "logo.jpg",
       })
       .expect(codes.badRequest);
@@ -468,7 +468,7 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, logo: "", authorId: author.id })
         )
-        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+        .attach("logoUpdate", Buffer.from("fakeImage", "utf-8"), {
           filename: undefined,
         })
         .then((data) => {
@@ -489,7 +489,7 @@ describe(`Given a /projects${endpoints.updateProject} route`, () => {
           "project",
           JSON.stringify({ ...mockProtoProject, authorId: author.id })
         )
-        .attach("logo_update", Buffer.from("fakeImage", "utf-8"), {
+        .attach("logoUpdate", Buffer.from("fakeImage", "utf-8"), {
           filename: "new-logo",
         })
         .expect(codes.internalServerError);

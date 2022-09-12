@@ -45,7 +45,7 @@ projectsRouter.delete(
 projectsRouter.put(
   endpoints.updateProject,
   authentication,
-  upload.single("logo_update"),
+  upload.single("logoUpdate"),
   getStringData,
   validateId,
   compressImage,
