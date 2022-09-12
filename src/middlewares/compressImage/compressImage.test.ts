@@ -6,8 +6,12 @@ import compressImage from "./compressImage";
 
 const mockToFile = jest.fn();
 
-const mockJpeg = jest.fn().mockReturnValue({
+const mockToFormat = jest.fn().mockReturnValue({
   toFile: mockToFile,
+});
+
+const mockJpeg = jest.fn().mockReturnValue({
+  toFormat: mockToFormat,
 });
 
 let mockResize = jest.fn().mockReturnValue({
@@ -46,6 +50,7 @@ describe("Given a compressImage function", () => {
 
       expect(mockResize).toHaveBeenCalled();
       expect(mockJpeg).toHaveBeenCalled();
+      expect(mockToFormat).toHaveBeenCalled();
       expect(mockToFile).toHaveBeenCalled();
     });
 
