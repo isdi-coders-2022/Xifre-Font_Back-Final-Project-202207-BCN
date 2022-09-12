@@ -138,10 +138,11 @@ export const addFriend = async (
 
   try {
     client = await User.findById(id);
+
     friend = await User.findById(friendId);
 
-    if (client.contacts.includes(friend.id)) {
-      throw new Error("");
+    if (client.contacts.includes(friendId)) {
+      throw new Error("Requested friend is already a contact");
     }
 
     await User.findByIdAndUpdate(

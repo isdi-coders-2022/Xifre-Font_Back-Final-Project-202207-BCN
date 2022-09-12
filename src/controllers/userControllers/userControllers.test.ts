@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import codes from "../../configs/codes";
 import { User } from "../../database/models/User";
+import { CustomRequest } from "../../middlewares/authentication/authentication";
 import mockUser from "../../test-utils/mocks/mockUser";
 import CreateError from "../../utils/CreateError/CreateError";
 import prepareToken from "../../utils/prepareToken/prepareToken";
-import { getUserData, logIn, signUp } from "./userControllers";
+import { addFriend, getUserData, logIn, signUp } from "./userControllers";
 
 let mockHashCompareValue: boolean | jest.Mock<boolean> = true;
 
@@ -220,6 +221,136 @@ describe("Given a getUserData controller", () => {
 
       const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+});
+
+describe("Given a addFriend function (controller)", () => {
+  describe("When called with a request, a response and a next function as arguments", () => {
+    test(`It should call status with a code of '${codes.ok}'`, async () => {
+      const req = {
+        payload: { id: mockUser.id, name: "" },
+        params: { friendId: mockUser.id },
+      } as Partial<CustomRequest>;
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as Partial<Response>;
+
+      const next = jest.fn();
+
+      User.findByIdAndUpdate = jest
+        .fn()
+        .mockReturnValue({ ...mockUser, contacts: [] });
+      User.findById = jest.fn().mockReturnValue({ ...mockUser, contacts: [] });
+
+      await addFriend(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(codes.ok);
+    });
+
+    test("It should respond informing that the friend was added", async () => {
+      const req = {
+        payload: { id: mockUser.id },
+        params: { friendId: mockUser.id },
+      } as Partial<Request>;
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as Partial<Response>;
+
+      const next = jest.fn();
+
+      User.findByIdAndUpdate = jest.fn().mockReturnValue(mockUser);
+      User.findById = jest.fn().mockReturnValue(mockUser);
+
+      const expectedResponse = { friendAdded: mockUser.name };
+
+      await addFriend(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.json).toHaveBeenCalledWith(expectedResponse);
+    });
+  });
+
+  describe("When called but it was not possible to find the requested user", () => {
+    test("Then it should call next with an error", async () => {
+      User.findByIdAndUpdate = jest.fn().mockRejectedValue(new Error());
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as Partial<Response>;
+
+      const customReq = {
+        payload: { id: mockUser.id },
+        params: { friendId: mockUser.id },
+      } as Partial<Request>;
+
+      const expectedError = new CreateError(
+        codes.notFound,
+        "Bad request",
+        "Error while adding friend: "
+      );
+      const nextError = jest.fn();
+
+      await addFriend(
+        customReq as CustomRequest,
+        res as Response,
+        nextError as NextFunction
+      );
+
+      expect(nextError).toHaveBeenCalledWith(expectedError);
+
+      const nextErrorCalled = nextError.mock.calls[0][0];
+
+      expect(nextErrorCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When called but the requesting user already had the requested friend", () => {
+    test("Then it should call next with an error", async () => {
+      User.findByIdAndUpdate = jest.fn().mockReturnValue(mockUser);
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as Partial<Response>;
+
+      const reqWithSameId = {
+        payload: { id: mockUser.id },
+        params: { friendId: mockUser.contacts[0] },
+      } as Partial<Request>;
+      const nextWithSameId = jest.fn();
+
+      const expectedError = new CreateError(
+        codes.notFound,
+        "Bad request",
+        "Error while adding friend: Requested friend is already a contact"
+      );
+
+      await addFriend(
+        reqWithSameId as CustomRequest,
+        res as Response,
+        nextWithSameId as NextFunction
+      );
+
+      expect(nextWithSameId).toHaveBeenCalledWith(expectedError);
+
+      const nextWithSameIdCalled = nextWithSameId.mock.calls[0][0];
+
+      expect(nextWithSameIdCalled.privateMessage).toBe(
+        expectedError.privateMessage
+      );
     });
   });
 });
