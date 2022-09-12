@@ -31,18 +31,14 @@ jest.mock("fs/promises", () => ({
   readFile: jest.fn(),
 }));
 
-const mockToFile = jest.fn();
-
-const mockJpeg = jest.fn().mockReturnValue({
-  toFile: mockToFile,
-});
-
-const mockResize = jest.fn().mockReturnValue({
-  jpeg: mockJpeg,
-});
-
 jest.mock("sharp", () => () => ({
-  resize: mockResize,
+  resize: jest.fn().mockReturnValue({
+    jpeg: jest.fn().mockReturnValue({
+      toFormat: jest.fn().mockReturnValue({
+        toFile: jest.fn(),
+      }),
+    }),
+  }),
 }));
 
 describe(`Given a /projects${endpoints.allProjects} route`, () => {

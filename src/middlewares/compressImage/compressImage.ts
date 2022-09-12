@@ -19,9 +19,11 @@ const compressImage = async (
 
   try {
     await sharp(path.join("public", "uploads", `${logo}`))
-      .resize(250, 250, { withoutEnlargement: true })
+      .resize(60, 60, { withoutEnlargement: true, fit: "cover" })
       .jpeg({ quality: 90 })
+      .toFormat("webp")
       .toFile(path.join("public", "uploads", `r_${logo}`));
+
     next();
   } catch (error) {
     const newError = new CreateError(
