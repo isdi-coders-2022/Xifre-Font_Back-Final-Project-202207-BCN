@@ -388,7 +388,9 @@ describe("Given a addFriend function (controller)", () => {
 });
 
 describe("Given a getAllUsers function (controller)", () => {
-  const req = {} as Partial<Request>;
+  const req = {
+    query: { username: "" },
+  } as Partial<Request>;
 
   const res = {
     status: jest.fn().mockReturnThis(),
@@ -448,6 +450,24 @@ describe("Given a getAllUsers function (controller)", () => {
 
       const nextCalled = next.mock.calls[0][0];
       expect(nextCalled.privateMessage).toBe(expectedError.privateMessage);
+    });
+  });
+
+  describe("When called requesting a specific user", () => {
+    test("Then it should find by the requested params", async () => {
+      const customReq = {
+        query: { username: mockUser.name },
+      } as Partial<Request>;
+
+      User.find = jest.fn().mockReturnValue([mockUser]);
+
+      await getAllUsers(
+        customReq as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(User.find).toHaveBeenCalledWith({ name: mockUser.name });
     });
   });
 });
