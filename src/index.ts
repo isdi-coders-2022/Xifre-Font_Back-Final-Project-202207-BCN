@@ -15,7 +15,7 @@ const debug = Debug("widescope:index");
     await connectDB(environment.database);
     const server = startServer(environment.port);
     const io = startSocketsServer(server);
-    messaging(io, "Pedro", "Prueba");
+    messaging(io);
   } catch (error) {
     debug(chalk.red("Error while starting the server and the database"));
     process.exit(5);
