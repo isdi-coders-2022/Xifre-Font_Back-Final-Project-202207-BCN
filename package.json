@@ -44,6 +44,7 @@
     "mock-fs": "^5.1.4",
     "mongodb-memory-server": "^8.9.0",
     "nodemon": "^2.0.19",
+    "socket.io-client": "^4.5.2",
     "supertest": "^6.2.4",
     "ts-jest": "^28.0.7",
     "typescript": "^4.7.4"
