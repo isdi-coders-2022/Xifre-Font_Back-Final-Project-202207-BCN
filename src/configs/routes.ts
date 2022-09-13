@@ -6,6 +6,7 @@ export const routers = {
 export const endpoints = {
   logIn: "/log-in",
   signUp: "/sign-up",
+  getAll: "/all",
   getUserData: "/:userId",
   addFriend: "/:friendId",
 

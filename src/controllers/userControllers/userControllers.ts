@@ -177,8 +177,15 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { username } = req.query;
+  const search = {} as { [key: string]: string | object };
+
+  if (username) {
+    search.name = username;
+  }
+
   try {
-    const users = await User.find({});
+    const users = await User.find(search);
 
     if (!users.length) {
       throw new Error();

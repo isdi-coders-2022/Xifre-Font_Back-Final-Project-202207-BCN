@@ -3,6 +3,7 @@ import { validate } from "express-validation";
 import { endpoints } from "../../../configs/routes";
 import {
   addFriend,
+  getAllUsers,
   getUserData,
   logIn,
   signUp,
@@ -25,6 +26,7 @@ usersRouter.post(
   logIn
 );
 
+usersRouter.get(endpoints.getAll, getAllUsers);
 usersRouter.get(endpoints.getUserData, getUserData);
 
 usersRouter.patch(endpoints.addFriend, authentication, addFriend);
