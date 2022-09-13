@@ -181,7 +181,7 @@ export const getAllUsers = async (
   const search = {} as { [key: string]: string | object };
 
   if (username) {
-    search.name = username;
+    search.name = username.toString();
   }
 
   try {

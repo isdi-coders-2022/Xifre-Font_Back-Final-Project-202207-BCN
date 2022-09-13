@@ -7,15 +7,14 @@ import listeners from "./listeners";
 const debug = Debug("widescope:messaging");
 
 const messaging = (
-  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
-  ...users: string[]
+  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 ) => {
-  debug(chalk.yellow(`Sockets trying to open between users ${users}`));
+  debug(chalk.yellow("Sockets ready"));
 
   io.on("connection", (socket: Socket) => {
     debug(chalk.green("Sockets listening"));
 
-    listeners(socket, ...users);
+    listeners(socket);
   });
 };
 
