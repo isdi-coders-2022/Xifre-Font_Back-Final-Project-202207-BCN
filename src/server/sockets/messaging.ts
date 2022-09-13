@@ -2,6 +2,7 @@ import { Socket, Server } from "socket.io";
 import Debug from "debug";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import chalk from "chalk";
+import listeners from "./listeners";
 
 const debug = Debug("widescope:messaging");
 
@@ -14,15 +15,7 @@ const messaging = (
   io.on("connection", (socket: Socket) => {
     debug(chalk.green("Sockets listening"));
 
-    users.forEach((user: string) => {
-      socket.on(
-        `MESSAGE_FROM:${user}`,
-        async (message: string, receiver: string) => {
-          socket.broadcast.emit(`MESSAGE_TO:${receiver}`, message);
-          debug(`${user} as sender says ${message}`);
-        }
-      );
-    });
+    listeners(socket, ...users);
   });
 };
 
