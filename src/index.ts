@@ -1,9 +1,11 @@
 import "./loadEnvironment";
 import Debug from "debug";
 import chalk from "chalk";
-import startServer from "./server/startServer";
 import connectDB from "./database";
 import environment from "./configs/environment";
+import startServer from "./server/startServer";
+import startSocketsServer from "./server/socketsServer";
+import messaging from "./server/sockets/messaging";
 
 const debug = Debug("widescope:index");
 
@@ -11,7 +13,9 @@ const debug = Debug("widescope:index");
   debug(chalk.gray("Starting server and connecting to the database"));
   try {
     await connectDB(environment.database);
-    await startServer(environment.port ?? 4000);
+    const server = startServer(environment.port);
+    const io = startSocketsServer(server);
+    messaging(io, "Pedro", "Prueba");
   } catch (error) {
     debug(chalk.red("Error while starting the server and the database"));
     process.exit(5);

@@ -7,5 +7,8 @@ module.exports = {
     "!src/index.ts",
     "!src/server/startServer.ts",
     "!src/database/index.ts",
+    "!src/server/sockets/listeners.ts",
+    "!src/server/sockets/messaging.ts",
+    "!src/server/socketsServer.ts",
   ],
 };
