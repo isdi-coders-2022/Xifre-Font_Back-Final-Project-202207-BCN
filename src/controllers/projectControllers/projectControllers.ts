@@ -222,7 +222,7 @@ export const updateProject = async (
     const toUpdate = await Project.findById(projectId);
 
     const setLogo =
-      project.logo === "default_logo" ? toUpdate.logo : project.logo;
+      project.logo === "default_logo.png" ? toUpdate.logo : project.logo;
 
     const updatedProject = {
       ...project,
