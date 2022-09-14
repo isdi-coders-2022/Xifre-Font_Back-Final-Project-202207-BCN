@@ -18,7 +18,7 @@ const getStringData = async (
 
     const newLogoName = file
       ? `${Date.now()}${file.originalname}`
-      : "default_logo";
+      : "default_logo.png";
 
     if (file) {
       await fs.rename(

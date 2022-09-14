@@ -130,10 +130,10 @@ describe("Given a supabaseUpload function", () => {
       expect(mockUpload).not.toHaveBeenCalled();
     });
 
-    test("Then it should call next and not upload anything if the logo is 'default_logo'", async () => {
+    test("Then it should call next and not upload anything if the logo is 'default_logo.png'", async () => {
       const reqWithoutLogo = {
         body: {
-          logo: "default_logo",
+          logo: "default_logo.png",
         },
       } as Partial<Request>;
 

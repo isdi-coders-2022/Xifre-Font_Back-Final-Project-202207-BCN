@@ -12,7 +12,7 @@ const compressImage = async (
 ) => {
   const { logo } = req.body as IProject;
 
-  if (!logo || logo === "default_logo") {
+  if (!logo || logo === "default_logo.png") {
     next();
     return;
   }
