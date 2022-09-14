@@ -9,7 +9,7 @@ jest.useFakeTimers();
 
 describe("Given a getStringData function", () => {
   beforeEach(async () => {
-    await fs.writeFile("public/uploads/logo-name.png", "content");
+    await fs.writeFile("uploads/logo-name.png", "content");
   });
 
   describe("When called with a request, a response and a next function as arguments", () => {

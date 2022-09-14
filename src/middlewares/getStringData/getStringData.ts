@@ -22,8 +22,8 @@ const getStringData = async (
 
     if (file) {
       await fs.rename(
-        path.join("public", "uploads", file.filename),
-        path.join("public", "uploads", newLogoName)
+        path.join("uploads", file.filename),
+        path.join("uploads", newLogoName)
       );
     }
 

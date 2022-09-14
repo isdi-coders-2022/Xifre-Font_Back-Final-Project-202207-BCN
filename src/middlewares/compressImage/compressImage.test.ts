@@ -23,12 +23,12 @@ jest.mock("sharp", () => () => ({
 }));
 
 beforeAll(async () => {
-  await fs.writeFile("public/uploads/logo-name.png", "content", () => {});
+  await fs.writeFile("uploads/logo-name.png", "content", () => {});
 });
 
 afterAll(async () => {
-  await fs.unlink("public/uploads/logo-name.png", () => {});
-  await fs.unlink("public/uploads/r_logo-name.png", () => {});
+  await fs.unlink("uploads/logo-name.png", () => {});
+  await fs.unlink("uploads/r_logo-name.png", () => {});
 });
 
 describe("Given a compressImage function", () => {
