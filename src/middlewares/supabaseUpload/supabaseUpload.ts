@@ -24,13 +24,13 @@ const supabaseUpload = async (
     return;
   }
 
-  const imagePath = path.join("public", "uploads", logo);
+  const imagePath = path.join("uploads", logo);
   const resolvedPath = path.resolve(imagePath);
 
   try {
     const fileData = await readFile(resolvedPath);
     const compressedFileData = await readFile(
-      path.join("public", "uploads", `r_${logo}`)
+      path.join("uploads", `r_${logo}`)
     );
 
     const storage = supabase.storage.from(environment.supabase.bucket);

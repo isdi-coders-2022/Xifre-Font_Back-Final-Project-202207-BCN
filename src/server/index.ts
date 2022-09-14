@@ -20,7 +20,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use(express.static("uploads"));
 
 app.use(routers.users, usersRouter);
 app.use(routers.projects, projectsRouter);

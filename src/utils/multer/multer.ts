@@ -12,11 +12,12 @@ export const multerFilter = (
     callback(null, false);
     return;
   }
+
   callback(null, true);
 };
 
 export const upload = multer({
-  dest: path.join("public", "uploads"),
+  dest: path.join("uploads"),
   limits: { fileSize: maxFileSize },
   fileFilter: multerFilter,
 });
